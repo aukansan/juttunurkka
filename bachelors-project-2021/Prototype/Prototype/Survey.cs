@@ -35,13 +35,13 @@ namespace Prototype
 			introMessage = null;
 			emojis = new List<Emoji>();
 
-			emojis.Add(new Emoji(0, "Iloinen", "neutral", false, new List<string>(), "emoji0lowres.png"));
-			emojis.Add(new Emoji(1, "Hämmästynyt", "neutral", false, new List<string>(), "emoji1lowres.png"));
-			emojis.Add(new Emoji(2, "Neutraali", "neutral", false, new List<string>(), "emoji2lowres.png"));
-			emojis.Add(new Emoji(3, "Vihainen", "neutral", false, new List<string>(), "emoji3lowres.png"));
-			emojis.Add(new Emoji(4, "Väsynyt", "neutral", false, new List<string>(), "emoji4lowres.png"));
-			emojis.Add(new Emoji(5, "Miettivä", "neutral", false, new List<string>(), "emoji5lowres.png"));
-			emojis.Add(new Emoji(6, "Itkunauru", "neutral", false, new List<string>(), "emoji6lowres.png"));
+			emojis.Add(new Emoji(0, "Iloinen", "neutral", false, new List<Activity>(), "emoji0lowres.png"));
+			emojis.Add(new Emoji(1, "Hämmästynyt", "neutral", false, new List<Activity>(), "emoji1lowres.png"));
+			emojis.Add(new Emoji(2, "Neutraali", "neutral", false, new List<Activity>(), "emoji2lowres.png"));
+			emojis.Add(new Emoji(3, "Vihainen", "neutral", false, new List<Activity>(), "emoji3lowres.png"));
+			emojis.Add(new Emoji(4, "Väsynyt", "neutral", false, new List<Activity>(), "emoji4lowres.png"));
+			emojis.Add(new Emoji(5, "Miettivä", "neutral", false, new List<Activity>(), "emoji5lowres.png"));
+			emojis.Add(new Emoji(6, "Itkunauru", "neutral", false, new List<Activity>(), "emoji6lowres.png"));
 
 			RoomCode = null;
 			Name = null;
@@ -60,7 +60,7 @@ namespace Prototype
 			string tempIntro = Const.intros[0];
 			List<Emoji> tempEmojis = new List<Emoji>();
 
-			List<string> activities;
+			List<Activity> activities;
 
 			Const.activities.TryGetValue(0, out activities);
 			activities = activities.GetRange(0, 3);

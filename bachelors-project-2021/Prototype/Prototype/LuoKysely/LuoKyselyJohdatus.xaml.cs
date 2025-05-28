@@ -23,9 +23,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -41,6 +42,7 @@ namespace Prototype
         public LuoKyselyJohdatus()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
 
             introMessage = Const.intros;
 
@@ -67,11 +69,14 @@ namespace Prototype
             int selectedIndex = picker.SelectedIndex;
             
             if (selectedIndex != -1) {
-          /*      if(selectedIndex == 2)
+
+                selectedItem = KysymysPicker.Items[selectedIndex];
+
+                if (selectedItem == "Luo oma kysymys...")
                 {
                     await Navigation.PushAsync(new Omakysymys());
-                }*/
-                //ottaa talteen kysymyksen
+                    return;
+                }
                 selectedItem = KysymysPicker.Items[KysymysPicker.SelectedIndex];
                 JatkaBtn.IsEnabled = true;
             }

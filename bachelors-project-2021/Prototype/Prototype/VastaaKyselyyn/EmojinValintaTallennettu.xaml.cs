@@ -2,6 +2,7 @@
 /*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Riina Kaipia
 
 This file is part of "Juttunurkka".
 
@@ -20,9 +21,10 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -93,7 +95,7 @@ namespace Prototype
         private async void Vastaa_Clicked(object sender, EventArgs e)
         {
             await Main.GetInstance().client.SendResult(answer.ToString());
-            await Navigation.PushAsync(new OdotetaanVastauksiaClient());
+            await Navigation.PushAsync(new EmojiAnswered(answer));
         }
     }
 }

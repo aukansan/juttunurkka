@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+Copyright ¨2025 Riina Kaipia
+    
+This file is part of "Juttunurkka".
+
+Juttunurkka is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+Juttunurkka is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Prototype.LuoKysely.LuoOmaVaihtoehto"
+             Title="Lisää oma vaihtoehto"
+             BackgroundColor="#ffea7f">
+
+    <StackLayout Spacing="40">
+
+        <Label Text="Lisää oma vaihtoehto"
+               VerticalOptions="StartAndExpand"
+               HorizontalOptions="CenterAndExpand"
+               HorizontalTextAlignment="Center"
+               FontAttributes="Bold"
+               FontSize="30"
+               TextColor="Black"
+               Margin="0,50,0,0" />
+
+        <Frame Padding="10"
+               VerticalOptions="StartAndExpand"
+               HorizontalOptions="CenterAndExpand"
+               BorderColor="#4383EF"
+               Margin="0,0,0,330"
+               CornerRadius="10"
+               HeightRequest="150"
+               WidthRequest="300">
+            <Editor x:Name="OmaTeksti"
+                    Placeholder="Kirjoita teksti..."
+                    VerticalOptions="FillAndExpand"
+                    AutoSize="TextChanges"
+                    BackgroundColor="White"
+                    TextColor="Black" />
+        </Frame>
+
+        <Grid RowDefinitions="Auto, Auto"
+              ColumnDefinitions="Auto, Auto"
+              VerticalOptions="End"
+              Padding="10"
+              HorizontalOptions="CenterAndExpand">
+            <Button Grid.Column="0"
+                Text="Edellinen"
+                Clicked="EdellinenButtonClicked"
+                VerticalOptions="EndAndExpand"
+                HorizontalOptions="CenterAndExpand" 
+                BackgroundColor="#feba4f"
+                TextColor="Black"
+                BorderColor="Transparent"
+                FontSize="19"
+                Margin="20,0,10,40"
+                CornerRadius="10"
+                HeightRequest="50"
+                WidthRequest="150"
+                FontAttributes="Bold"
+            />
+            <Button Grid.Column="1"
+                    Text="Tallenna"
+                    Clicked="TallennaButtonClicked"
+                    VerticalOptions="EndAndExpand"
+                    HorizontalOptions="CenterAndExpand"
+                    FontSize="19"
+                    Margin="20,0,10,40"
+                    CornerRadius="10"
+                    HeightRequest="50"
+                    WidthRequest="150"
+                    BackgroundColor="#feba4f"
+                    BorderColor="Transparent"
+                    FontAttributes="Bold"
+                    TextColor="Black" />
+        </Grid>
+
+    </StackLayout>
+</ContentPage>

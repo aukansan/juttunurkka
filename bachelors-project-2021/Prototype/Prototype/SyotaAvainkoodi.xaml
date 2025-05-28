@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+Copyright 2025 Petri Pentinpuro
+
+This file is part of "Juttunurkka".
+
+Juttunurkka is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+Juttunurkka is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Prototype.SyotaAvainkoodi"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="#ffea7f">
+    <AbsoluteLayout Padding="0"
+                  HorizontalOptions="FillAndExpand"
+                  VerticalOptions="FillAndExpand">
+        <StackLayout AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+                     AbsoluteLayout.LayoutFlags="All"
+                     BackgroundColor="#ffea7f">
+            <StackLayout Padding="10">
+                <Image Source="logo_no_background"
+                       HorizontalOptions="Center"
+                       VerticalOptions="CenterAndExpand"
+                       WidthRequest="50"
+                       HeightRequest="50"
+                       Margin="0,150,0,60"
+                       Aspect="AspectFit"
+                       Scale="6.5" />
+
+                <!-- Grid containing the Entry field and the Image (lock) -->
+                <Grid HorizontalOptions="CenterAndExpand"
+                      Margin="0,110,0,0"
+                      HeightRequest="380"
+                      WidthRequest="300"
+                      BackgroundColor="#89e077">
+                    <Frame BackgroundColor="#feba4f"
+                           CornerRadius="7"
+                           HasShadow="False"
+                           HorizontalOptions="FillAndExpand"
+                           VerticalOptions="FillAndExpand"
+                           Margin="-20,35,-20,170">
+                        <Grid HorizontalOptions="Center"
+                              VerticalOptions="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Text input field for the key (Entry) -->
+                            <Entry x:Name="entry"
+                                 Grid.Row="0"
+                                 Grid.Column="0"
+                                 Placeholder="Avainkoodi"
+                                 FontSize="35"
+                                 Margin="20,10,0,-22"
+                                 HorizontalOptions="FillAndExpand"
+                                 VerticalOptions="Center"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="175"
+                                 HeightRequest="60" />
+
+                            <!-- Lock image (Lukko) -->
+                            <Image Source="lukko.png"
+                                   x:Name="LukkoImage"
+                                   Grid.Row="0"
+                                   Grid.Column="1"
+                                   WidthRequest="120"
+                                   HeightRequest="120"
+                                   HorizontalOptions="End"
+                                   VerticalOptions="Center"
+                                   Aspect="AspectFit"
+                                   Margin="10,0,0,0">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="LukkoImage_Tapped" />
+                                </Image.GestureRecognizers>
+                            </Image>
+
+                        </Grid>
+                    </Frame>
+                </Grid>
+
+                <!-- Button to go back -->
+                <Button Text="Edellinen"
+                        Clicked="AlkuunClicked"
+                        HorizontalOptions="Center"
+                        VerticalOptions="EndAndExpand"
+                        FontSize="29"
+                        FontAttributes="Bold"
+                        BackgroundColor="#feba4f"
+                        BorderColor="#ffea7f"
+                        TextColor="Black"
+                        BorderWidth="0"
+                        CornerRadius="7"
+                        HeightRequest="60"
+                        WidthRequest="250"
+                        Margin="0,-70,0,10" />
+            </StackLayout>
+        </StackLayout>
+    </AbsoluteLayout>
+</ContentPage>

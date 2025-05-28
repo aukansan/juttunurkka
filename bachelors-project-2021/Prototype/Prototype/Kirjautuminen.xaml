@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Eemil Alamäki
 
 This file is part of "Juttunurkka".
 
@@ -18,51 +19,60 @@ You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.Kirjautuminen"
              Title="Juttunurkka"
+             BackgroundColor="#ffea7f"
              >
 
-    <StackLayout VerticalOptions="CenterAndExpand" Spacing="20" Padding="0,0,0,90">
+    <StackLayout VerticalOptions="CenterAndExpand" Spacing="10" Padding="0,0,0,50">
         <Label Text="Kirjaudu sisään opettajanhuoneeseen"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand"
                 HorizontalTextAlignment="Center"
                 FontAttributes="Bold"
                 FontSize="30"
-                TextColor="#4383EF"
+                TextColor="Black"
                 Padding="0,0,0,40"
              />
 
         <Label Text="Käyttäjätunnus"
-                VerticalOptions= "CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand"
-                Padding="-125,0,0,0"
+               FontAttributes="Bold"
+                VerticalOptions= "EndAndExpand" 
+                HorizontalOptions="StartAndExpand"
+               FontSize="20"
+               Margin="80,0,0,0"
              />
         <Entry x:Name="txtUsername" TextColor="black" PlaceholderColor="Gray" HeightRequest="50"
                 WidthRequest="250" HorizontalOptions="CenterAndExpand"></Entry>
         
         <Label Text="Salasana"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand"
-                Padding="-125,0,0,0"     
+               FontAttributes="Bold"
+                VerticalOptions="EndAndExpand" 
+                HorizontalOptions="StartAndExpand"
+               FontSize="20"
+               Margin="80,0,0,0"
              />
 
         <Entry x:Name="txtPassword" IsPassword="True" TextColor="black" PlaceholderColor="Gray" HeightRequest="50"
                 WidthRequest="250" HorizontalOptions="CenterAndExpand"></Entry>
        
-
         
         <Button  
                 Text="Kirjaudu"
+                FontAttributes="Bold"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" 
-                Font="19"
-              Margin="20,10,10,35"
+                FontSize="19"
+              Margin="20,40,10,5"
+              TextColor="Black"
               CornerRadius="10"
               HeightRequest="50"
               WidthRequest="255"
+              BackgroundColor="#feba4f"
+              BorderWidth="0.1"
+              BorderColor="Transparent"
               Clicked="KirjauduClicked"/>
 
     </StackLayout>

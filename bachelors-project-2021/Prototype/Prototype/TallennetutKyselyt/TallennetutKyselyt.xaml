@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Eemil Alamäki
 
 This file is part of "Juttunurkka".
 
@@ -17,10 +18,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.TallennetutKyselyt"
-             >
+             BackgroundColor="#ffea7f">
 
     
     <!-- custom back button solution -->
@@ -40,6 +41,7 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             <Label Text="Tallennetut kyselyt"
                    Margin="20,0,0,0"
                    FontSize="20" 
+                   FontAttributes="Bold"
                    HorizontalOptions="Center"  
                    VerticalOptions="Center"/>
         </StackLayout>
@@ -52,10 +54,15 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 		<Button  Text="Oletuskysely"
                  Clicked="OletusClicked" 
                  Margin="20,20,20,20"
-                 CornerRadius="100"
+                 TextColor="Black"
+                 FontAttributes="Bold"
+                 CornerRadius="10"
                  HorizontalOptions="Center"
                  WidthRequest="300"
+                 FontSize="20"
                  HeightRequest="50"
+                 BackgroundColor="#feba4f"
+                 BorderColor="Transparent"
                  IsEnabled="True"/>
 		
         <CollectionView Margin="20"
@@ -89,12 +96,18 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
         <Button  x:Name="TButton"
                  Text="Avaa"
+                 TextColor="Black"
+                 FontAttributes="Bold"
                  Clicked="AvaaClicked" 
                  Margin="0,0,0,20"
-                 CornerRadius="100"
+                 CornerRadius="10"
                  HorizontalOptions="Center"
                  WidthRequest="150"
                  HeightRequest="50"
+                 FontSize="20"
+                 BackgroundColor="#feba4f"
+                 BorderColor="Transparent"
+                 BorderWidth="0.1"
                  IsEnabled="False"/>
 
 

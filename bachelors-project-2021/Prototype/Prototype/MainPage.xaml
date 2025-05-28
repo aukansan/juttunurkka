@@ -2,6 +2,7 @@
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Petri Pentinpuro, Eemil Alamäki
 
 This file is part of "Juttunurkka".
 
@@ -18,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.MainPage"
              NavigationPage.HasNavigationBar="False"
@@ -32,6 +33,7 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
         <StackLayout AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
                      AbsoluteLayout.LayoutFlags="All" 
+                     BackgroundColor="#ffea7f"
                      >
 
             <StackLayout Padding="10">
@@ -41,106 +43,145 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                     <Button Grid.Column="0" 
                         Text="Info"
                         Clicked="InfoClicked"    
+                        TextColor="Black"
                         HorizontalOptions="Start" 
-                        Font="19"
+                        FontSize="20"
+                        FontAttributes="Bold"
                         Margin="10,10,0,35"
                         CornerRadius="10"
+                        BackgroundColor="#feba4f"
+                        BorderColor="#ffea7f"
                         HeightRequest="60"/>
 
 
                     <Button Grid.Column="1"
                         Text="Opettaja"
                         HorizontalOptions="End" 
-                        Font="19"
+                        FontSize="20"
+                        FontAttributes="Bold"
+                        TextColor="Black"
                         Margin="0,10,10,35"
                         CornerRadius="10"
+                        BackgroundColor="#feba4f"
+                        BorderColor="#ffea7f"
                         HeightRequest="60"
                         Clicked="AvaaOpettaja"/>
 
 
                 </Grid>
 
-                <Label Text="Juttunurkka"
+                <!--<Label Text="Juttunurkka"
                    Margin="5,10,0,20"
                    HorizontalOptions="Center"
                    TextColor="#4383EF"
-                   Font="Bold"
+                   FontAttributes="Bold"
                    FontSize="50"
-                 />
+                 />-->
 
-                <StackLayout Orientation="Horizontal"  
-                    HorizontalOptions="CenterAndExpand"
-                    HeightRequest="500"
-                    WidthRequest="280"         
-                    BackgroundColor="#CBD6E5">
- 
-                    <Button Text="Avaa juttunurkka"
-                        Clicked="LiityKyselyynClicked"
-                        HorizontalOptions="CenterAndExpand"
-                        VerticalOptions="CenterAndExpand"
-                        Font="19"
-                        Margin="0,60,0,0"
-                        BorderColor="#4383EF"
-                        CornerRadius="15"
-                        HeightRequest="60"
-                        />
-                </StackLayout>
+                <Image Source="logo_no_background"
+                    HorizontalOptions="Center"
+                    VerticalOptions="CenterAndExpand"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    Margin="0,100,0,80"
+                    Aspect="AspectFit"
+                    Scale="6.5"
+                    />
+
+                <Grid HorizontalOptions="CenterAndExpand"
+                    Margin="0,50,0,0"
+                    HeightRequest="380"
+                    WidthRequest="300"
+                    BackgroundColor="#89e077">
+
+
+                    <Grid.RowDefinitions>
+                        <!-- For the Label -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- For the Button -->
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Text="TERVETULOA JUTTUNURKKAAN!"
+                        Grid.Row="0"
+                        TextColor="Black"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Start"
+                        FontSize="26"
+                        Padding="0"
+                        LineBreakMode="WordWrap"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center"
+                        FontFamily="BebasNeue"
+                        Margin="10,20,10,40" />
+
+                    <Label Text="AVAA JUTTUNURKKA JA ODOTA OPETTAJAN OHJEITA"
+                        Grid.Row="1"
+                        TextColor="Black"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Start"
+                        FontSize="26"
+
+                        Padding="0"
+                        LineBreakMode="WordWrap"
+                        FontFamily="BebasNeue"
+                        Margin="10,0,10,0"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center"/>
+
+                    <Frame Grid.Row="2"
+                       Margin="0,0,0,-50"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Padding="0"
+                       HeightRequest="160"
+                       WidthRequest="250"
+                       BackgroundColor="#feba4f"
+                       CornerRadius="5"
+                       BorderColor="Transparent"
+                       HasShadow="True">
+
+                        <Grid Padding="20,0"
+                              ColumnSpacing="0"
+                              RowSpacing="0"
+                              HorizontalOptions="Center"
+                              VerticalOptions="Center">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Text="AVAA JUTTUNURKKA"
+                               Grid.Column="0"
+                               HorizontalOptions="Start"
+                               FontSize="30"
+                               TextColor="Black"
+                               FontFamily="BebasNeue"
+                               LineBreakMode="WordWrap"/>
+
+                            <Image Source="lukko.png"
+                               Grid.Column="1"
+                               WidthRequest="80"
+                               HeightRequest="80"
+                               HorizontalOptions="End"
+                               VerticalOptions="Center"
+                               Aspect="AspectFit" />
+                        </Grid>
+
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="LiityKyselyynClicked" />
+                        </Frame.GestureRecognizers>
+                    </Frame>
+                </Grid>
 
             </StackLayout>
 
         </StackLayout>
-
-
-        <!--Avainkoodi popup-->
-
-        <ContentView
-            x:Name="popupSelection"
-            Padding="10,0"
-            AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
-            AbsoluteLayout.LayoutFlags="All"
-            BackgroundColor="#C0808080"
-            IsVisible="false">
-
-            <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                <StackLayout
-               BackgroundColor="White"
-               HeightRequest="175"
-               Orientation="Vertical"
-               WidthRequest="300">
-                    <Label Text="Anna avainkoodi" FontSize="24" TextColor="Black" Margin="20,10,10,0" HorizontalOptions="Center" />
-                    <Entry x:Name="entry"
-                  Margin="20,10,20,0"                                       
-                  FontSize="22"/>
-
-                    <AbsoluteLayout Margin="0,0,0,7"  VerticalOptions ="EndAndExpand" HorizontalOptions="CenterAndExpand">
-                        <Grid Margin="0,0,0,0">
-                            <Button Grid.Column="1"
-                          x:Name="OkButton"
-                          TextColor="{StaticResource QuinaryColor}"
-                          FontAttributes="Bold"
-                          BackgroundColor="Transparent"
-                          BorderColor="Transparent"
-                          CornerRadius="100"
-                          WidthRequest="130"
-                          Text="Ok"  
-                          Clicked="Ok_Clicked"/>
-                            <Button                               
-                          Text="Peruuta" 
-                          TextColor="{StaticResource QuinaryColor}"
-                          FontAttributes="Bold"
-                          CornerRadius="100"
-                          BackgroundColor="Transparent"
-                          BorderColor="Transparent"
-                          WidthRequest="130"
-                          Clicked="Peruuta_Clicked" />
-                        </Grid>
-                    </AbsoluteLayout>
-                </StackLayout>
-
-            </StackLayout>
-
-        </ContentView>
-
 
         <!--Info popup-->
 
@@ -153,22 +194,25 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
 
                 <Frame CornerRadius="15"
-                       Padding="10"
-                       BorderColor="#4383EF">
-                    <StackLayout BackgroundColor="White"
+                       Padding="0"
+                       BorderColor="White">
+                    <StackLayout BackgroundColor="#89e077"
                              HeightRequest="200"
                              Orientation="Vertical"
                              WidthRequest="300"
                             
                              >
                         <Label Text="OpenMoji"
+                           FontAttributes="Bold"
                            HorizontalOptions="Center"
                            Margin="0,15,0,0"
+                           BackgroundColor="#89e077"
                            FontSize="22"/>
 
                         <Label Margin="20,5,15,0" 
                            TextColor="Black"
                            FontSize="18"
+                           FontAttributes="Bold"
                            HorizontalOptions="Center">
                             <Label.FormattedText>
                                 <FormattedString>
@@ -197,7 +241,7 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                         <AbsoluteLayout Margin="15"  VerticalOptions ="EndAndExpand" HorizontalOptions="CenterAndExpand">
 
                             <Button Text="OK"
-                                    TextColor="{StaticResource QuinaryColor}"
+                                    TextColor="Black"
                                     FontAttributes="Bold"
                                     FontSize="18"
                                     HeightRequest="43"

@@ -22,9 +22,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -45,26 +46,27 @@ namespace Prototype
         public Esikatselu()
         {
             InitializeComponent();
-            Survey s = SurveyManager.GetInstance().GetSurvey();
-            introMessage += s.introMessage;
-            RoomCode = s.RoomCode;
-            Name = s.Name;
+            NavigationPage.SetHasNavigationBar(this, false);
+            Survey survey = SurveyManager.GetInstance().GetSurvey();
+            introMessage += survey.introMessage;
+            RoomCode = survey.RoomCode;
+            Name = survey.Name;
 
-            Emojit = new List<CollectionItem>();
-            List<Emoji> temp = s.emojis;
+            Emojit = [];
+            List<Emoji> temp = survey.emojis;
 
             foreach (var item in temp)
             {
-                CollectionItem i = new CollectionItem();
-                i.Item = item;
-                i.ActivityChoises = item.activities;
+                CollectionItem i = new CollectionItem
+                {
+                    Item = item,
+                    ActivityChoises = [.. item.Activities.Select(activity => activity.Title!)]
+                };
                 Emojit.Add(i);
             }
 
             BindingContext = this;
         }
-
-
 
         async void ValmisButtonClicked(object sender, EventArgs e)
         {

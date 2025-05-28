@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
-
+          2025 Joni Lapinkoski
+    
 This file is part of "Juttunurkka".
-
 Juttunurkka is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, version 3 of the License.
@@ -17,155 +17,114 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.LisätiedotHost"
              Title="Juttunurkka"
-             NavigationPage.HasNavigationBar="False">
+             BackgroundColor="#FFEA7F">
+
     <ContentPage.Content>
-        <StackLayout Margin="0,0,0,130">
+        <StackLayout Padding="0,80,0,0">
 
-            <Label Text="Tulokset"
-                   VerticalOptions="Start"
-                   HorizontalOptions="CenterAndExpand"
-                   FontSize="30"
-                   TextColor="#4383EF"
-                   FontAttributes="Bold"
-                   Margin="0,40,0,0"/>
+            <Label
+        Text="TULOKSET"
+        FontSize="40"
+        FontAttributes="Bold"
+        FontFamily="BebasNeue"
+        TextColor="Black"
+        HorizontalOptions="Center"
+        Margin="0,30,0,50"/>
 
-            <Button Text="{Binding introMessage}"
-            VerticalOptions="CenterAndExpand" 
-            HorizontalOptions="CenterAndExpand" 
-            TextColor="Black"        
-            BorderColor="#4383EF"
-            BackgroundColor="Transparent"
-            Font="19"
-            Margin="20,20,20,0"
-            CornerRadius="10"
-            HeightRequest="50"
-            WidthRequest="340" />
+            <CollectionView
+        ItemsSource="{Binding Results}"
+        HorizontalOptions="Center"
+        Margin="0,0,0,20">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="0"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout
+              WidthRequest="100"
+              VerticalOptions="EndAndExpand"
+              HorizontalOptions="Center"
+              Spacing="0">
 
+                            <Image
+                Source="{Binding Image}"
+                HeightRequest="80"
+                HorizontalOptions="Center"/>
 
-            <Frame
-            HorizontalOptions="CenterAndExpand" 
-            VerticalOptions="CenterAndExpand"
-            x:Name="popupSelection"
-            HasShadow="True"
-            WidthRequest="340"
-            HeightRequest="350"
-            Margin="20,0,20,0"
-            Padding="1"
-            BackgroundColor="Transparent"
-            BorderColor="#4383EF"
-            CornerRadius="10"
-            IsVisible="true">
-                
-                <Grid Margin="20, 10, 20, 10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="0.25*"/>
-                        <RowDefinition Height="0.55*"/>
+                            <Grid
+                HeightRequest="200"
+                VerticalOptions="FillAndExpand">
+                                <Frame
+                  VerticalOptions="End"
+                  HeightRequest="{Binding ScalePx}"
+                  WidthRequest="60"
+                  BackgroundColor="#FEBA4F"
+                  CornerRadius="5"
+                  Padding="0"
+                  HasShadow="False">
+                                    <Label
+                    Text="{Binding Amount}"
+                    TextColor="Black"
+                    FontSize="30"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"/>
+                                </Frame>
+                            </Grid>
 
-                        <RowDefinition Height="0.25*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.14*"/>
-                        <ColumnDefinition Width="0.14*"/>
-                        <ColumnDefinition Width="0.14*"/>
-                    </Grid.ColumnDefinitions>
-                    <Image
-                    Source="{Binding resultImages[0]}"
-                       Grid.Row="0"/>
-
-                    <Rectangle WidthRequest="50" 
-                           HeightRequest="50"
-                           Stroke="blue"
-                           Fill="blue"
-                           Grid.Column="0"
-                           Grid.Row="1"
-                           ScaleY="{Binding resultScale[0]}"
-                           AnchorY="1"/>
-                    <Label Text="{Binding resultAmount[0]}"
-                       Grid.Row="2"
-                       FontSize="18"
-
-                       HorizontalOptions="CenterAndExpand"/>
-
-                    <Image Source="{Binding resultImages[1]}"
-                       Grid.Row="0"
-                       Grid.Column="1"/>
-
-                    <Rectangle WidthRequest="50" 
-                           HeightRequest="50"
-                           Stroke="red"
-                           Fill="red"
-                           Grid.Column="1"
-                           Grid.Row="1"
-                           ScaleY="{Binding resultScale[1]}"
-                           AnchorY="1"/>
-                    <Label Text="{Binding resultAmount[1]}"
-                       Grid.Column="1"
-                       Grid.Row="2"
-                       FontSize="18"
-
-                       HorizontalOptions="CenterAndExpand"/>
-
-                    <Image Source="{Binding resultImages[2]}"
-                       Grid.Row="0"
-                       Grid.Column="2"/>
-
-                    <Rectangle WidthRequest="50" 
-                           HeightRequest="50"
-                           Stroke="green"
-                           Fill="green"
-                           Grid.Column="2"
-                           Grid.Row="1"
-                           ScaleY="{Binding resultScale[2]}"
-                           AnchorY="1"/>
-                    <Label Text="{Binding resultAmount[2]}"
-                       Grid.Column="2"
-                       Grid.Row="2"
-                       FontSize="18"
-                       HorizontalOptions="CenterAndExpand"/>
-
-                </Grid>
-
-                
-            </Frame>
+                            <BoxView
+                HeightRequest="8"
+                BackgroundColor="#C381FD"
+                VerticalOptions="End"
+                Margin="0,0,0,25"
+                HorizontalOptions="FillAndExpand"/>
 
 
 
-            <Grid 
-            RowDefinitions="Auto, Auto"
-            ColumnDefinitions="Auto, Auto"
-            VerticalOptions="EndAndExpand"
-            HorizontalOptions="CenterAndExpand">
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-                <Button Grid.Column="1"
-                Text="Keskeytä"
-                Clicked="KeskeytäClicked"
-                VerticalOptions="EndAndExpand"
-                HorizontalOptions="CenterAndExpand" 
-                Font="19"
-                Margin="20,40,10,0"
-                CornerRadius="10"
-                HeightRequest="50"
-                WidthRequest="150"
-            />
+            <StackLayout
+        Orientation="Horizontal"
+        HorizontalOptions="Center"
+        VerticalOptions="EndAndExpand"
+        Spacing="20"
+        Margin="0,0,0,30">
 
-                <Button Grid.Column="2" 
-                Text="Jatka"
-                Clicked="JatkaClicked" 
-                VerticalOptions="EndAndExpand" 
-                HorizontalOptions="CenterAndExpand" 
-                Font="19"
-                Margin="20,40,10,0"
-                CornerRadius="10"
-                HeightRequest="50"
-                WidthRequest="150"
-            />
-            </Grid>
+                <Button
+          Text="Keskeytä"
+          Clicked="KeskeytäClicked"
+          BackgroundColor="#FEBA4F"
+          TextColor="Black"
+          FontSize="20"
+          FontAttributes="Bold"
+          CornerRadius="10"
+          HeightRequest="70"
+          WidthRequest="150"
+          BorderColor="Transparent"
+          BorderWidth="0"/>
 
+                <Button
+          Text="Jatka"
+          Clicked="JatkaClicked"
+          BackgroundColor="#FEBA4F"
+          TextColor="Black"
+          FontSize="20"
+          FontAttributes="Bold"
+          CornerRadius="10"
+          HeightRequest="70"
+          WidthRequest="150"
+          BorderColor="Transparent"
+          BorderWidth="0"/>
 
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

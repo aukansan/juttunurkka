@@ -27,194 +27,58 @@ namespace Prototype
 {
     public class ActivityVote
     {
-        private Dictionary<int, IList<string>> vote1Candidates;
-        private List<string> vote2Candidates;
+        private Dictionary<int, IList<Activity>> vote1Candidates;
         private readonly int totalCount = Main.GetInstance().host.data.totalEmojis;
         private string finalResult;
         public int vote1Timer = 0;
-        public int vote2Timer = Const.vote2Time;
         public int coolDown = 5;
 
 
         public ActivityVote ()
         {
-            vote1Candidates = new Dictionary<int, IList<string>>();
-            vote2Candidates = new List<string>();
+            vote1Candidates = new Dictionary<int, IList<Activity>>();
         }
 
-        public void calcVote1Candidates(List<Emoji> emojis, Dictionary<int, int> emojiResults)
+        public IList<Activity> calcVote1Candidates(List<Emoji> emojis, Dictionary<int, int> emojiResults)
         {
-            //Creating dictionary for threat ranking and sorted threat ranking
-            Dictionary<int, double> ranking = new Dictionary<int, double>();
-            Dictionary<int, double> sortedRanking = new Dictionary<int, double>();
-            double percentage = 0.0;
-            double tolerance = 0.0;
-            double threat = 0.0;
-
-            Console.WriteLine("ennen foreachia");
-
-            int luku = emojiResults.Count;
-
-            Console.WriteLine(luku);
+            int topAnswerKey = 0;
+            int topVotes = 0;
+            int answerKey = 0;
             
             foreach (KeyValuePair<int, int> answer in emojiResults)
-            {                
-                if(emojiResults.ContainsKey(answer.Key))
+            {
+                if (answer.Value > topVotes)
                 {
-                    int found = 0;
-                    Console.WriteLine("vastauskey: "+answer.Key);
-
-                    percentage = (double)answer.Value / totalCount;
-
-                    //assigning tolerance for each answer in emojiResults
-              /*      foreach (var emoji in emojis)
-                    {
-                        Console.WriteLine(emoji.ID);
-
-                        if (emoji.ID.Equals(answer.Key))
-                        {
-                            if (emojis[found].Impact == "negative")
-                            {
-                                tolerance = 0.25;
-                            }
-                            if (emojis[found].Impact == "neutral")
-                            {
-                                tolerance = 0.15;
-                                Console.WriteLine("emojin aktiviteettii kohta1: " + emojis[found].activities[0]);
-                            }
-                            if (emojis[found].Impact == "positive")
-                            {
-                                tolerance = 0.25;
-                            }
-                            found++;
-                            break;
-                        }
-                    }*/
-                    
-                    tolerance = 0.15;
-                    //Calculation for the threat value
-                    threat = percentage - tolerance;
-                    Console.WriteLine("key: {0}, percentage: {1}, threat: {2}", answer.Key, percentage, threat);
-                    Console.WriteLine(answer.Key.ToString() + threat);
-                    //Adding each answer to the ranking dictionary
-                    ranking.Add(answer.Key, threat);
+                    topAnswerKey = answerKey;
                 }
-            }
-            
-
-            //Sorting each item in ranking by threat value (highest threat is at top)
-            foreach (KeyValuePair<int, double> item in ranking.OrderByDescending(key => key.Value).ThenBy(key=>key.Key))
-            {
-                sortedRanking.Add(item.Key, item.Value);
-            }
-            
-
-            String sorted= sortedRanking.Values.ElementAt(0).ToString();
-            Console.WriteLine(sorted +"sorted");
-
-            //if top ranking threat is higher than 0 a.k.a. threat is above threshold we add it in the vote1candidates if the threat value is above 0
-            if (sortedRanking.Values.ElementAt(0) > 0)
-            {
-                foreach (KeyValuePair<int, double> item in sortedRanking)
-                {
-                    int emojilistanro = 0;
-
-                    if (item.Value > 0)
-                    {
-
-                        foreach (var emoj in emojis)
-                        {
-                            if (emoj.ID == item.Key)
-                            {
-                                Console.WriteLine("vote1:seen lisätään:itemkey ja idnro: " + item.Key + emojilistanro);
-                                vote1Candidates.Add(item.Key, emojis[emojilistanro].activities);
-                                Console.WriteLine("vote1:seen lisättiin: " + item.Key + emojis[emojilistanro].activities[0]);
-                                emojilistanro++;
-                                break;
-                            }
-                          /*  else
-                            {*/
-                                emojilistanro++;
-                         //   }
-                        }
-                    }
-                }
-            }
-            // if threat value us 0 or lower add the top 2 to the vote1candidates, top 2 works since the ranking list is practically all emojis
-         /*   if(sortedRanking.Values.ElementAt(0) <= 0)
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    vote1Candidates.Add(sortedRanking.Keys.ElementAt(i), emojis[sortedRanking.Keys.ElementAt(i)].activities);
-                }
-            }*/
-            vote1Timer = (Const.vote1PerEmojiTime * vote1Candidates.Count) + 10;
-        }
-        
-        public void calcVote2Candidates(Dictionary<(int, string), int> vote1Results)
-        {
-            //fallback, if nobody votes in phase 1
-            if (vote1Results.Count == 0)
-            {
-                Console.WriteLine("We did not receive any votes in phase 1, default fallback = first activity in activities of each emoji");
-				foreach (var item in vote1Candidates)
-				{
-                    vote2Candidates.Add(item.Value.ElementAt(0));
-				}
+                answerKey++;
             }
 
-            //for getting a sorted list out of vote1Results
-            Dictionary<(int, string), int> sorted = new Dictionary<(int, string), int>();
-            foreach (KeyValuePair<(int, string), int> item in vote1Results.OrderByDescending(key => key.Value).ThenBy(key=> key.Key))
-            {
-                Console.WriteLine("key: {0}, value: {1}", item.Key, item.Value);
-                sorted.Add(item.Key, item.Value);
-            }
-
-            //temporary list for parsing the sorted list from duplicate IDs leaving the most voted activity per emoji
-            Dictionary<int, string> tempList = new Dictionary<int, string>();
-            foreach(var key in sorted.Keys)
-            {
-                if (!tempList.ContainsKey(key.Item1))
-                {
-                    Console.WriteLine("keyItem1: {0}, KeyItem2: {1}", key.Item1, key.Item2);
-                    tempList.Add(key.Item1, key.Item2);
-                }
-            }
-
-            //adding each sorted key (previously voted activities) to vote2Candidates list
-            foreach (var item in tempList.Values)
-            {
-                vote2Candidates.Add(item);
-            }
+            vote1Candidates.Add(topAnswerKey, emojis[topAnswerKey].Activities);
+            Console.WriteLine($"Added candidates {topAnswerKey} {emojis[topAnswerKey].Activities}");
+            // TODO: Check where to get this but it can be hard coded now
+            vote1Timer = 30;
+            return emojis[topAnswerKey].Activities;
         }
 
         //get vote1candidates
-        public Dictionary<int, IList<string>> GetVote1Candidates() {
+        public Dictionary<int, IList<Activity>> GetVote1Candidates() {
             return vote1Candidates;
 		}
         //set vote1candidates
-        public void SetVote1Candidates(Dictionary<int, IList<string>> candidates) {
+        public void SetVote1Candidates(Dictionary<int, IList<Activity>> candidates) {
             vote1Candidates = candidates;
 		}
 
-        //get vote2candidates
-        public List<string> GetVote2Candidates() {
-            return vote2Candidates;
-        }
-        //set vote2candidates
-        public void SetVote2Candidates(List<string> candidates)
+        public string calcFinalResult(Dictionary<Activity, int> vote1Results)
         {
-            vote2Candidates = candidates;
-        }
-
-        public string calcFinalResult(Dictionary<string, int> vote2Results)
-        {
+            // TODO: Use the vote 1 results here
             //fallback, if nobody voted in phase 2
+            /*
 			if (vote2Results.Count == 0)
 			{
                 Console.WriteLine("We did not receive any votes in phase 2, default fallback = activity of the emoji with highest level of concern");
-                return vote2Candidates.ElementAt(0);
+                //return vote2Candidates.ElementAt(0);
 			}
 
             //creating empty dictionary sorted
@@ -226,7 +90,7 @@ namespace Prototype
 
             //final result is the top from sorted list of vote2results
             finalResult = sorted.Keys.ElementAt(0);
-
+            */
             return finalResult;
         }
 
@@ -247,12 +111,12 @@ namespace Prototype
                 value += "\n";
             }
             
-
+            /* Can be removed?
             foreach(var item in vote2Candidates)
             {
                 value += $"Activity: {item}";
                 value += "\n";
-            }
+            }*/
             
 
             value += finalResult;

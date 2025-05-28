@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Emmi Poutanen, Eemil Alamäki
 
 This file is part of "Juttunurkka".
 
@@ -17,190 +18,125 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.Esikatselu"
+             BackgroundColor="#ffea7f"
              Title="Juttunurkka">
+
     <ContentPage.Content>
-        <StackLayout>
-            <Label 
-            Text="Esikatselu"
-            VerticalOptions="StartAndExpand" 
-            HorizontalOptions="CenterAndExpand"
-            HorizontalTextAlignment="Center"
-            FontAttributes="Bold"
-            FontSize="30"
-            TextColor="#4383EF" 
-            Margin="0,40,0,-40"
-        />
+        <StackLayout Padding="0,60,0,0" Spacing="20" HorizontalOptions="Center">
 
+            <!-- Otsikko -->
+            <Label Text="Esikatselu"
+                   FontAttributes="Bold"
+                   FontSize="30"
+                   TextColor="Black"
+                   HorizontalOptions="Center"/>
 
+            <!-- Intro Message Button -->
             <Button Text="{Binding introMessage}"
-            VerticalOptions="CenterAndExpand" 
-            HorizontalOptions="CenterAndExpand" 
-            TextColor="Black"        
-            BorderColor="#4383EF"
-            BackgroundColor="Transparent"
-            Font="19"
-            Margin="20,0,20,0"
-            CornerRadius="10"
-            HeightRequest="50"
-            WidthRequest="340" />
-                        <Frame
-            HorizontalOptions="CenterAndExpand" 
-            VerticalOptions="CenterAndExpand"
-            x:Name="popupSelection"
-            HasShadow="True"
-            WidthRequest="340"
-            HeightRequest="300"
-            Margin="20,-40,20,0"
-            Padding="1"
-            BackgroundColor="Transparent"
-            BorderColor="#4383EF"
-            CornerRadius="10"
-            IsVisible="true">
+                    TextColor="Black"
+                    BorderColor="#4383EF"
+                    FontAttributes="Bold"
+                    BackgroundColor="White"
+                    FontSize="18"
+                    CornerRadius="10"
+                    HeightRequest="50"
+                    BorderWidth="1"
+                    WidthRequest="340"/>
 
-                            <CollectionView ItemsSource="{Binding Emojit}"
-                                HeightRequest="400">
+            <!-- Aktiviteetit-kehys -->
+            <Frame BorderColor="#4383EF"
+                   BackgroundColor="White"
+                   CornerRadius="10"
+                   Padding="10, 25, 10, 25"
+                   WidthRequest="340"
+                   MaximumHeightRequest="360">
 
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Padding="5"
-                              RowDefinitions="Auto, *"
-                             ColumnDefinitions="Auto, *"
-                                              
-                                             >
+                <StackLayout Spacing="15">
 
-                                            <Image Grid.RowSpan="1"                                           
-                                                    Margin="10,10,10,0"
-                                       Source="{Binding Item.ImageSource}"
-                                       Aspect="AspectFill"
-                                       HeightRequest="60"
-                                       WidthRequest="60" />
+                    <Label Text="Valitut aktiviteetit"
+                           FontAttributes="Bold"
+                           FontSize="18"
+                           HorizontalOptions="Center"
+                           TextColor="Black"/>
 
-                                            <Button Grid.Column="2"
-                                        Grid.ColumnSpan="3"
-                                        Margin="0,0,5,0"
-                                        VerticalOptions="Center"
-                                        HorizontalOptions="CenterAndExpand"
-                                        WidthRequest="300"
-                                        HeightRequest="45"
-                                        CornerRadius="10"
-                                        Text="aktiviteetit" 
-                                        
-                                />
+                    <!-- Aktiviteettilista -->
+                    <CollectionView ItemsSource="{Binding Emojit}"
+                                    SelectionMode="None"
+                                    HeightRequest="300">
 
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="25"/>
+                        </CollectionView.ItemsLayout>
 
-                                            <!-- drop down menu -->
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <StackLayout Orientation="Horizontal" Spacing="10">
 
-                                            <Frame
-                                Grid.Column="2"
-                                Grid.ColumnSpan="3"
-                                Grid.Row="1"                               
-                              
-                                VerticalOptions="Center"
-                                HorizontalOptions="Center"
-                                HeightRequest="150"
-                                Padding="5"
-                                HasShadow="True"
-                                WidthRequest="160"
-                                BorderColor="Gray"  
-                                CornerRadius="10"
-                                BackgroundColor="White" 
-                                IsVisible="true">
+                                    <!-- Emoji -->
+                                    <Image Source="{Binding Item.ImageSource}"
+                                           WidthRequest="30"
+                                           HeightRequest="30"
+                                           VerticalOptions="Start"/>
 
-                                                <StackLayout HorizontalOptions="Center" VerticalOptions="Center"
-									
-                                    Orientation="Vertical"
-                                    WidthRequest="200">
+                                    <!-- Aktiviteettien nimet -->
+                                    <StackLayout>
+                                        <Label Text="{Binding ActivityChoises[0]}" FontSize="18" TextColor="Black" LineBreakMode="WordWrap" WidthRequest="280" HorizontalTextAlignment="Start"/>
+                                        <Label Text="{Binding ActivityChoises[1]}" FontSize="18" TextColor="Black" LineBreakMode="WordWrap" WidthRequest="280" HorizontalTextAlignment="Start"/>
+                                    </StackLayout>
 
+                                </StackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-                                                    <CollectionView x:Name="Collection" 
-                                                        ItemsSource= "{Binding ActivityChoises}"
-                                                        SelectionMode="None">
+                </StackLayout>
+            </Frame>
 
-                                                        <CollectionView.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Grid 
-                                                        Padding="0"
-                                                          RowDefinitions="Auto, *"
-                                                          ColumnDefinitions="Auto, *"  >
-
-                                                                    <Label 
-                                                            Text="{Binding .}" 
-                                                            TextColor="Black"
-                                                            FontSize="18"/>
-
-
-                                                                    <!-- Separator -->
-                                                                    <BoxView HeightRequest="1"
-                                                                BackgroundColor="DarkGray"
-                                                                Grid.ColumnSpan="2"
-                                                                Grid.Row="2"
-                                                                VerticalOptions="End"/>
-
-
-                                                                </Grid>
-
-                                                            </DataTemplate>
-                                                        </CollectionView.ItemTemplate>
-                                                    </CollectionView>
-                                                </StackLayout>
-
-                                            </Frame>
-                                        </Grid>
-
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
-
-                            </CollectionView>
-                        </Frame>
+            <!-- Avainkoodi -->
+            <StackLayout Orientation="Horizontal"
+                         HorizontalOptions="Center"
+                         Spacing="20">
+                <Label Text="Avainkoodi"
+                       FontSize="18"
+                       VerticalOptions="Center"
+                       FontAttributes="Bold"
+                       TextColor="Black"/>
+                <Frame
+                    BorderColor="#4383EF"
+                    CornerRadius="10">
                     
+                    <Label Text="{Binding RoomCode}"
+                       FontSize="18"
+                       TextColor="Black"
+                       HorizontalOptions="Start"
+                       WidthRequest="60"
+                       HeightRequest="20"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"/>
+                </Frame>
+            </StackLayout>
 
-            <Grid>
-                <Label 
-            Text="Avainkoodi"
-            VerticalOptions="StartAndExpand" 
-            HorizontalOptions="StartAndExpand"
-            HorizontalTextAlignment="Center"
-            FontSize="20"
-            TextColor="Black" 
-            Margin="30,0,0,10"
-            />
+            <!-- Napit -->
+            <StackLayout Orientation="Horizontal"
+                         HorizontalOptions="Center"
+                         Spacing="20"
+                         Margin="0,20,0,0">
 
-                <Button Text="{Binding RoomCode}"
-            VerticalOptions="CenterAndExpand" 
-            HorizontalOptions="CenterAndExpand" 
-            BorderColor="#4383EF"
-            BackgroundColor="Transparent"
-            Font="19"
-            TextColor="Black"
-            Margin="20,-40,20,-30"
-            CornerRadius="10"
-            HeightRequest="50"
-            WidthRequest="100" />
-
-            </Grid>
-
-            <Grid 
-            RowDefinitions="Auto, Auto"
-            ColumnDefinitions="Auto, Auto"
-            VerticalOptions="EndAndExpand"
-            HorizontalOptions="CenterAndExpand">
-
-
-                <Button Grid.Column="2" 
-                Text="Valmis"
-                Clicked="ValmisButtonClicked" 
-                VerticalOptions="EndAndExpand" 
-                HorizontalOptions="CenterAndExpand" 
-                Font="19"
-                Margin="20,0,10,40"
-                CornerRadius="10"
-                HeightRequest="50"
-                WidthRequest="150"
-            />
-            </Grid>
+                <Button Text="Valmis"
+                        BackgroundColor="#feba4e"
+                        TextColor="Black"
+                        CornerRadius="10"
+                        BorderColor="Transparent"
+                        HeightRequest="50"
+                        WidthRequest="150"
+                        FontAttributes="Bold"
+                        FontSize="19"
+                        Clicked="ValmisButtonClicked"/>
+            </StackLayout>
 
         </StackLayout>
     </ContentPage.Content>

@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Eemil Alamäki
 
 This file is part of "Juttunurkka".
 
@@ -17,9 +18,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.LuoKyselyLopetus"
+             BackgroundColor="#ffea7f"
              Title="Juttunurkka">
 
 
@@ -31,22 +33,26 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             HorizontalTextAlignment="Center"
             FontAttributes="Bold"
             FontSize="30"
-            TextColor="#4383EF" 
+            TextColor="Black" 
             Margin="0,40,0,0"
              />
        
                 <Label
                     Grid.Row="0"
-                    Margin="20,10,0,10"
+                    Margin="40,10,0,-5"
                     Text="Nimi"
                     TextColor="Black"
-                    FontSize="20"/>
+                    FontAttributes="Bold"
+                    FontSize="22"/>
 
             <Entry   x:Name="NameEditor"
                      Margin="20,10,20,-70"
                      Placeholder="Kirjoita..."
+                     WidthRequest="340"
                      VerticalOptions="StartAndExpand"
+                     FontAttributes="Bold"
                      BackgroundColor="White"  
+                     FontSize="20"
                      TextChanged="OnEntryTextChanged"
                  />
 
@@ -54,25 +60,28 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                      VerticalOptions="Center"
                      HorizontalOptions="CenterAndExpand">
 
-            <Image Source="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Indian_election_symbol_Key.svg/800px-Indian_election_symbol_Key.svg.png?20191030145043"
-               HeightRequest="60"
-               WidthRequest="60"
+            <Image Source="key"
+               HeightRequest="70"
+               WidthRequest="70"
+               Margin="-10,0,0,0"
                />
 
             <Frame Padding="5"
                 HorizontalOptions="CenterAndExpand"
                 BorderColor="#4383EF"
                 CornerRadius="10" 
-                HeightRequest="30"
-                WidthRequest="100"
-                Margin="25,5,5,5">
+                HeightRequest="60"
+                WidthRequest="120"
+                Margin="5,5,5,5">
 
 
                     <Entry x:Name="KeyEditor"
                      Placeholder="Kirjoita..."
                      VerticalOptions="StartAndExpand"
                      MaxLength="6"
+                    FontAttributes="Bold"
                      BackgroundColor="White"
+                     FontSize="20"
                      TextChanged="OnEntryTextChanged"
                  />
 
@@ -87,28 +96,36 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             VerticalOptions="EndAndExpand"
             HorizontalOptions="CenterAndExpand">
 
-            <Button Grid.Column="1"
+            <Button Grid.Column="0"
                 Text="Edellinen"
                 Clicked="EdellinenButtonClicked"
                 VerticalOptions="EndAndExpand"
                 HorizontalOptions="CenterAndExpand" 
-                Font="19"
+                TextColor="Black"
+                FontAttributes="Bold"
+                FontSize="19"
                 Margin="20,0,10,40"
                 CornerRadius="10"
                 HeightRequest="50"
                 WidthRequest="150"
+                BackgroundColor="#feba4e"
+                BorderColor="#feba4e"
             />
 
-            <Button Grid.Column="2" 
+            <Button Grid.Column="1" 
                 Text="Jatka"
+                TextColor="Black"
+                FontAttributes="Bold"
                 Clicked="JatkaButtonClicked" 
                 VerticalOptions="EndAndExpand" 
                 HorizontalOptions="CenterAndExpand" 
-                Font="19"
+                FontSize="19"
                 Margin="20,0,10,40"
                 CornerRadius="10"
                 HeightRequest="50"
                 WidthRequest="150"
+                BackgroundColor="#feba4e"
+                BorderColor="#feba4e"
             />
         </Grid>
 

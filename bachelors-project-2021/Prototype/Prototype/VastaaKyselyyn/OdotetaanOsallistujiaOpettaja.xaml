@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Riina Kaipia, Emmi Poutanen, Eemil Alamäki
 
 This file is part of "Juttunurkka".
 
@@ -17,83 +18,69 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.OdotetaanOsallistujiaOpettaja"
-             Title="Juttunurkka">
+             Title="Juttunurkka"
+             BackgroundColor="#ffea7f">
 
-
-
-    <ContentPage.Content>
-        <StackLayout>
+    <StackLayout Padding="0,80,0,0" Spacing="25" VerticalOptions="FillAndExpand">
 
             <Label 
-            Text="Odotetaan osallistujia"
-            VerticalOptions="StartAndExpand" 
-            HorizontalOptions="CenterAndExpand"
-            HorizontalTextAlignment="Center"
-            FontAttributes="Bold"
-            FontSize="30"
-            TextColor="#4383EF" 
-            Margin="0,50,0,0"
-        />
+                Text="Odotetaan osallistujia" 
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                FontAttributes="Bold"
+                FontSize="30"
+                TextColor="Black" 
+                Margin="0,20,0,0"/>
 
-            <Grid HorizontalOptions="Center"
-                  VerticalOptions="StartAndExpand">
-                
-                <Label Grid.Row="0"
-                Text="{Binding roomCode}"
-                   FontSize="25"
-                   HorizontalOptions="Center"
-                   VerticalOptions="StartAndExpand"
-                   Margin="0,30,0,0"/>
-
-            <!--Tämä .cs koodiin jos ehtii toteuttaa-->
-                <Label Grid.Row="1"
-                Text="Osallistujia x"
-                   FontSize="25"
-                   HorizontalOptions="Center"
-                   VerticalOptions="StartAndExpand"
-                   Margin="0,30,0,0"/>
-            </Grid>
+        <StackLayout Spacing="40" HorizontalOptions="Center">
             
+            <Label Text="{Binding ParticipantsCount, StringFormat='Osallistujia: {0}'}"
+                   FontSize="25"
+                   FontAttributes="Bold"
+                   TextColor="Black"
+                   HorizontalOptions="Center" />
 
-            <Grid>
-                <Button Grid.Row="0"
-                Text="Aloita kysely"
-                x:Name="AloitaBtn"
-                Clicked="AloitaButtonClicked" 
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" 
-                BackgroundColor="#4383EF"
-                TextColor="White"
-                BorderColor="Transparent"
-                Font="19"
-                Margin="20,0,10,0"
-                CornerRadius="10"
-                HeightRequest="50"
-                WidthRequest="300"
-                
-            />
-
-            <Button 
-                Grid.Row="1"
-                Text="Keskeytä"
-                Clicked="KeskeytaButtonClicked"
-                VerticalOptions="CenterAndExpand"
-                HorizontalOptions="CenterAndExpand" 
-                BackgroundColor="#4383EF"
-                TextColor="White"
-                BorderColor="Transparent"
-                Font="19"
-                Margin="20,0,10,20"
-                CornerRadius="10"
-                HeightRequest="50"
-                WidthRequest="300"
-            />
-            </Grid>
-
+            <Label Text="{Binding roomCode}"
+                   FontSize="25"
+                   FontAttributes="Bold"
+                   TextColor="Black"
+                   HorizontalOptions="Center"
+                   Margin="0,10,0,0" />
         </StackLayout>
 
-    </ContentPage.Content>
+        <StackLayout Spacing="15" VerticalOptions="Center" HorizontalOptions="Center">
+
+            <Button Text="Aloita kysely"
+                    x:Name="AloitaBtn"
+                    Clicked="AloitaButtonClicked"
+                    FontAttributes="Bold"
+                    BackgroundColor="#feba4e"
+                    TextColor="Black"
+                    FontSize="19"
+                    CornerRadius="10"
+                    BorderColor="Transparent"
+                    HeightRequest="50"
+                    WidthRequest="300"/>
+            
+            <Button Text="Keskeytä"
+                    Clicked="KeskeytaButtonClicked" 
+                    BackgroundColor="#feba4e"
+                    FontAttributes="Bold"
+                    BorderColor="Transparent"
+                    TextColor="Black"
+                    FontSize="19"
+                    CornerRadius="10"
+                    HeightRequest="50"
+                    WidthRequest="300"/>
+
+
+
+                
+        </StackLayout>
+
+    </StackLayout>
+
 </ContentPage>

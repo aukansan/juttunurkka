@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Eemil Alamäki
 
 This file is part of "Juttunurkka".
 
@@ -17,13 +18,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.LuoKyselyJohdatus"
              Title="Juttunurkka"
+             BackgroundColor="#ffea7f"
              >
 
-    <StackLayout  Spacing="40">
+    <StackLayout  VerticalOptions="FillAndExpand" Spacing="50" Padding="0,50,0,0">
 
         <Label Grid.Column="2"
             Text="Luo juttunurkka"
@@ -32,20 +34,22 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             HorizontalTextAlignment="Center"
             FontAttributes="Bold"
             FontSize="30"
-            TextColor="#4383EF" 
+            TextColor="Black" 
             Margin="0,50,0,0"
         />
 
         <Picker Title="Aseta kysymys"  
             x:Name="KysymysPicker"
             SelectedIndexChanged="OnPickerSelectedIndexChanged"
-            VerticalOptions="StartAndExpand" 
+            VerticalOptions="CenterAndExpand" 
             HorizontalOptions="CenterAndExpand"
             WidthRequest="340"
-            Margin="0,0,0,250"
+            HeightRequest="50"
+            Margin="0,0,0,300"
             TextColor="Black"
-            TitleColor="Black"
-            BackgroundColor="LightGray"    
+            TitleColor="Gray"
+            FontSize="20"
+            BackgroundColor="White"
             ItemsSource="{Binding Intros}"
             ItemDisplayBinding="{Binding introMessage}">
             
@@ -55,7 +59,7 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                 <x:String>Miten välitunti meni?</x:String>
                 <x:String>Mikä fiilis?</x:String>
                 <x:String>Mikä boogie?</x:String>
-    <!--            <x:String>Luo oma kysymys...</x:String> -->
+                <x:String>Luo oma kysymys...</x:String>
             </Picker.Items>
            
         </Picker>
@@ -63,36 +67,41 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
         <Grid 
             RowDefinitions="Auto, Auto"
             ColumnDefinitions="Auto, Auto"
-            VerticalOptions="End"
+                    VerticalOptions="End"
             HorizontalOptions="CenterAndExpand">
-
-            <Button Grid.Column="1"
-                x:Name="EdellinenBtn"
-                Clicked="EdellinenButtonClicked"  
-                Text="Edellinen"
-                VerticalOptions="EndAndExpand"
-                HorizontalOptions="CenterAndExpand" 
-                Font="19"
-                Margin="20,0,10,40"
-                CornerRadius="10"
-                HeightRequest="50"
-                WidthRequest="150"
-            />
-
-            <Button Grid.Column="2" 
-                x:Name="JatkaBtn"
-                Text="Jatka"
-                IsEnabled="False"
-                Clicked="JatkaButtonClicked" 
-                VerticalOptions="EndAndExpand" 
-                HorizontalOptions="CenterAndExpand" 
-                Font="19"
-                Margin="20,0,10,40"
-                CornerRadius="10"
-                HeightRequest="50"
-                WidthRequest="150"
-            />
-
+                <Button Grid.Column="0"
+                    x:Name="EdellinenBtn"
+                    Clicked="EdellinenButtonClicked"  
+                    Text="Edellinen"
+                    VerticalOptions="EndAndExpand"
+                    HorizontalOptions="CenterAndExpand" 
+                    FontSize="19"
+                    Margin="20,0,10,40"
+                    CornerRadius="10"
+                    HeightRequest="50"
+                    BorderColor="Transparent"
+                    WidthRequest="150"
+                    FontAttributes="Bold"
+                    BackgroundColor="#feba4f"
+                    TextColor="Black"
+                />
+                <Button Grid.Column="1"
+                    x:Name="JatkaBtn"
+                    Text="Jatka"
+                    IsEnabled="False"
+                    Clicked="JatkaButtonClicked" 
+                    VerticalOptions="EndAndExpand" 
+                    HorizontalOptions="CenterAndExpand" 
+                    FontSize="19"
+                    Margin="20,0,10,40"
+                    CornerRadius="10"
+                    BorderColor="Transparent"
+                    HeightRequest="50"
+                    WidthRequest="150"
+                    FontAttributes="Bold"
+                    BackgroundColor="#feba4f"
+                    TextColor="Black"
+                    />
         </Grid>
 
     </StackLayout>

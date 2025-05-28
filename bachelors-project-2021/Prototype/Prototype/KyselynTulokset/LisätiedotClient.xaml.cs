@@ -2,6 +2,7 @@
 /*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Emmi Poutanen, Joni Lapinkoski
 
 This file is part of "Juttunurkka".
 
@@ -19,86 +20,91 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls;
 
 namespace Prototype
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LisätiedotClient : ContentPage
     {
-        public IList<string> resultImages { get; set; }
-        public IList<double> resultScale { get; set; }
-        public IList<int> resultAmount { get; set; }
+        public ResultsViewModel ViewModel { get; set; }
+
         public LisätiedotClient()
         {
             InitializeComponent();
-            resultImages = new List<string>();
-            resultScale = new List<double>();
-            resultAmount = new List<int>();
+            NavigationPage.SetHasNavigationBar(this, false);
+            ViewModel = new ResultsViewModel();
+            BindingContext = ViewModel;
 
+            ProcessEmojiResults();
             ReceiveVote1();
-
-            int count = 0;
-            double calculateScale = 0.0;
-            Dictionary<int, int> sorted = new Dictionary<int, int>();
-            foreach (KeyValuePair<int, int> item in Main.GetInstance().client.summary.GetEmojiResults().OrderByDescending(key => key.Value))
-            {
-                sorted.Add(item.Key, item.Value);
-                resultAmount.Add(item.Value);
-                count += item.Value;
-            }
-            foreach (int key in sorted.Keys)
-            {
-                resultImages.Add("emoji" + key.ToString() + "lowres.png");
-            }
-            foreach (int value in sorted.Values)
-            {
-                if (count == 0)
-                {
-                    resultScale.Add(0);
-                }
-                else
-                {
-                    calculateScale = 1 * (double)value / count;
-                    resultScale.Add(calculateScale);
-                }
-            }
-           
-
-            BindingContext = this;
-            
         }
-        private async void ReceiveVote1()
+
+        void ProcessEmojiResults()
         {
-            bool success = await Main.GetInstance().client.ReceiveVote1Candidates();
+            var emojiResults = Main.GetInstance()
+                                   .client.summary
+                                   .GetEmojiResults()
+                                   .OrderByDescending(kvp => kvp.Value);
+
+            int totalVotes = emojiResults.Sum(kvp => kvp.Value);
+
+            foreach (var kvp in emojiResults)
+            {
+                var image = $"emoji{kvp.Key}lowres.png";
+                var amount = kvp.Value;
+                var height = totalVotes == 0
+                             ? 0
+                             : (int)((double)amount / totalVotes * 200);
+
+                ViewModel.Results.Add(new ResultItem
+                {
+                    Image = image,
+                    Amount = amount.ToString(),
+                    Scale = height
+                });
+            }
+        }
+
+        async void ReceiveVote1()
+        {
+            bool success = await Main.GetInstance()
+                                     .client
+                                     .ReceiveVote1Candidates();
             if (success)
             {
-                Console.WriteLine("Received Vote1 successfully");
-                await Navigation.PushAsync(new AktiviteettiäänestysEka());
+                await Navigation.PushAsync(
+                  new AktiviteettiäänestysEka());
             }
-            return;
         }
-    
+
         async void PoistuClicked(object sender, EventArgs e)
         {
+            bool answer = await DisplayAlert(
+              "Oletko varma että tahdot poistua kyselystä?",
+              "",
+              "Kyllä",
+              "Ei");
 
-            // Varmistus kyselystä poistumisen yhteydessä
-
-            var res = await DisplayAlert("Oletko varma että tahdot poistua kyselystä?", "", "Kyllä", "Ei");
-
-            if (res == true)
+            if (answer)
             {
                 Main.GetInstance().client.DestroyClient();
                 await Navigation.PopToRootAsync();
             }
-            else return;
-           
         }
+    }
+
+    public class ResultsViewModel
+    {
+        public ObservableCollection<ResultItem> Results { get; }
+            = new ObservableCollection<ResultItem>();
+    }
+
+    public class ResultItem
+    {
+        public string Image { get; set; }
+        public string Amount { get; set; }
+        public int Scale { get; set; }
     }
 }

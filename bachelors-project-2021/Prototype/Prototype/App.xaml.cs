@@ -1,6 +1,6 @@
-﻿
-/*
+﻿/*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
+          2025 Eemil Alamäki
 
 This file is part of "Mieliala kysely".
 
@@ -18,8 +18,11 @@ along with Mieliala kysely.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
+using Microsoft.Maui.Graphics;
 
 namespace Prototype
 {
@@ -29,8 +32,12 @@ namespace Prototype
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new MainPage()); 
-        }   
+            MainPage = new NavigationPage(new MainPage())
+            {
+                BarBackgroundColor = Color.FromArgb("#ffea7f"),    //palkin väri
+                BarTextColor = Colors.Transparent                  //tekstin väri
+            };
+        }
 
         protected override void OnStart()
         {

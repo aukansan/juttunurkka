@@ -1,6 +1,7 @@
 ﻿/*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Petri Pentinpuro, Emmi Poutanen
 
 This file is part of "Juttunurkka".
 
@@ -21,9 +22,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
+using System.Diagnostics;
 
 namespace Prototype
 {
@@ -36,7 +39,9 @@ namespace Prototype
         public Opettajanhuone()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
             TallennetutKyselyt();
+            BindingContext = this;
         }
 
         void TallennetutKyselyt()
@@ -58,10 +63,9 @@ namespace Prototype
             //siirrytään "luo uus kysely 1/3" sivulle 
             await Navigation.PushAsync(new LuoKyselyJohdatus());
         }
-
-        private void Button_Clicked(object sender, EventArgs e)
+        private async void ArkistoClicked(object sender, EventArgs e)
         {
-            PickerList.Focus();
+            await Navigation.PushAsync(new TallennetutKyselyt());
         }
 
         async void OletusClicked(object sender, EventArgs e)
@@ -90,6 +94,11 @@ namespace Prototype
         {
             var picker = (Picker)sender;
             int selectedIndex = picker.SelectedIndex;
+
+            if (selectedIndex == -1)
+            {
+                return;
+            }
 
             SelectedSurvey = picker.Items[picker.SelectedIndex];
 

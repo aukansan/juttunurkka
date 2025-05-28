@@ -2,6 +2,7 @@
 /*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Emmi Poutanen
 
 This file is part of "Juttunurkka".
 
@@ -26,6 +27,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
+using Microsoft.Maui;
+using System.IO;
+using System.Diagnostics;
 
 namespace Prototype
 {
@@ -38,185 +42,211 @@ namespace Prototype
 	// I cannot guarantee the safety of this code and I apologize for any bad approaches
 	// No sensitive data is exchanged luckily!
 	// Many of the functions here can be converted to generic ReceiveData and SendData functions to improve efficiency and error tolerance
+    public class SurveyHost
+    {
+        /// <summary>
+        ///     If this is true, host uses TCP client instead of the UDP. This enables developing with two Android emulators.
+        /// </summary>
+        private readonly bool _testMode;
 
-	public class SurveyHost
-	{
-		/// <value>
-		/// Instance of Survey containing the details of the hosted survey
-		/// </value>
-		private Survey survey;
-
-	//	private string allEmojiNames;
+        /// <value>
+        /// Instance of Survey containing the details of the hosted survey
+        /// </value>
+        private Survey survey;
 
 		/// <value>
 		/// Instance of SurveyData containing the data of the survey results
 		/// </value>
-		public SurveyData data { get; private set; }
+        public SurveyData data { get; private set; }
 
 		/// <value>
 		/// Integer value depicting how many clients are currently connected
 		/// </value>
-		public int clientCount { get; private set; }
+        public int clientCount { get; private set; }
 
 		/// <value>
 		/// List of TcpClient instances for each connected client
 		/// </value>
-		private List<TcpClient> clients;
+        private List<TcpClient> clients;
 
 		/// <value>
 		/// List of IP adresses which have joined the survey. Entries remain even if the client in question disconnects.
 		/// </value>
-		private List<IPAddress> clientHistory;
+        private List<IPAddress> clientHistory;
+
+        private int _activityVoteAnswerCount;
 
 		/// <value>
 		/// List of running Tasks which can be cancelled
 		/// </value>
-		private List<Task> cancellableTasks;
+        private List<Task> cancellableTasks;
 
 		/// <value>
 		/// Instance of CancellationTokenSource which can be used to call cancellation of tasks in the cancellableTasks list
 		/// </value>
-		private CancellationTokenSource tokenSource;
+        private CancellationTokenSource tokenSource;
 
 		/// <value>
 		/// Instance of CancellationToken fed to the cancellable tasks
 		/// </value>
-		private CancellationToken token;
+        private CancellationToken token;
 
 		/// <value>
 		/// Instance of ActivityVote to serve activity voting
 		/// </value>
-		public ActivityVote voteCalc { get; private set; } = null;
+        public ActivityVote voteCalc { get; private set; } = null;
 
 		/// <value>
 		/// Boolean indicating whether the voting has concluded
 		/// </value>
-		public bool isVoteConcluded { get; private set; } = false;
+        public bool isVoteConcluded { get; private set; } = false;
 
-		/// <summary>
-		/// Default constructor
-		/// <remarks>
-		/// The instance created does not start running any tasks automatically
-		/// </remarks>
-		/// </summary>
-		public SurveyHost() {
-			data = new SurveyData();
-			survey = SurveyManager.GetInstance().GetSurvey();
-			clientCount = 0;
-			clients = new List<TcpClient>();
-			clientHistory = new List<IPAddress>();
-			cancellableTasks = new List<Task>();
-			tokenSource = new CancellationTokenSource();
-			token = tokenSource.Token;
-		}
+        /// <summary>
+        /// Default constructor
+        /// <remarks>
+        /// The instance created does not start running any tasks automatically
+        /// </remarks>
+        /// </summary>
+        /// <param name="testMode">Run host in test mode</param>
+        public SurveyHost(bool testMode) {
+            data = new SurveyData();
+            survey = SurveyManager.GetInstance().GetSurvey();
+            clientCount = 0;
+            clients = new List<TcpClient>();
+            clientHistory = new List<IPAddress>();
+            cancellableTasks = new List<Task>();
+            tokenSource = new CancellationTokenSource();
+            token = tokenSource.Token;
+            _testMode = testMode;
+        }
 
-		/// <summary>
-		/// The main sequence of running a survey
-		/// </summary>
-		/// <remarks>
-		/// CloseSurvey method must be called to advance this task from the initial phase of accepting new clients
-		/// </remarks>
-		/// <returns>
-		/// Task object resulting in a boolean indicating whether a fatal error occured in the process terminating hosting as a whole
-		/// </returns>
-		public async Task<bool> RunSurvey()
-		{
+        /// <summary>
+        /// The main sequence of running a survey
+        /// </summary>
+        /// <remarks>
+        /// CloseSurvey method must be called to advance this task from the initial phase of accepting new clients
+        /// </remarks>
+        /// <returns>
+        /// Task object resulting in a boolean indicating whether a fatal error occured in the process terminating hosting as a whole
+        /// </returns>
+        public async Task<bool> RunSurvey(bool isEmulatorTesting = false)
+        {
+            if (_testMode)
+            {
+                // In emulator testing mode, only start the TCP server
+                Console.WriteLine("Running in emulator testing mode (TCP only)");
+                Task<bool> tcpTask = AcceptClient();
+                cancellableTasks.Add(tcpTask);
+                await Task.WhenAll(cancellableTasks.ToArray());
+                if (tcpTask.Result == false)
+                {
+                    // Fatal unexpected error
+                    return false;
+                }
+            }
+            else
+            {
+                //Phase 1 - making client connections and collecting emojis
+                Task<bool> task1 = ReplyBroadcast();
+                Task<bool> task2 = AcceptClient();
+                cancellableTasks.Add(task1);
+                cancellableTasks.Add(task2);
 
-			//Phase 1 - making client connections and collecting emojis
-			Task<bool> task1 = ReplyBroadcast();
-			Task<bool> task2 = AcceptClient();
-			cancellableTasks.Add(task1);
-			cancellableTasks.Add(task2);
+                await Task.WhenAll(cancellableTasks.ToArray());
+                if (task1.Result == false || task2.Result == false)
+                {
+                    //Fatal unexpected error do something...
+                    return false;
+                }
+            }
+            //Phase 2 - time after the survey has concluded in which users view results
+            Console.WriteLine($"Results: {data}");
+            Console.WriteLine("Sending results to clients");
+            SendToAllClients(data);
+            return true;
+        }
 
-			await Task.WhenAll(cancellableTasks.ToArray());
-			if (task1.Result == false || task2.Result == false)
-			{
-				//Fatal unexpected error do something...
-				return false;
-			}
-
-			//Phase 2 - time after the survey has concluded in which users view results
-			Console.WriteLine($"Results: {data}");
-			Console.WriteLine("Sending results to clients");
-			SendToAllClients(data);
-
-			return true;
-		}
-
-		/// <summary>
-		/// The main sequence of running activity vote after running the survey
-		/// </summary>
-		/// <returns>
-		/// Task object of the running process
-		/// </returns>
-		public async Task RunActivityVote()
-		{
+        /// <summary>
+        /// The main sequence of running activity vote after running the survey
+        /// </summary>
+        /// <returns>
+        /// Task object of the running process
+        /// </returns>
+        public async Task RunActivityVote()
+        {
+            Console.WriteLine("Running activity vote");
 			//send first vote to all candidates
-			SendToAllClients(voteCalc.GetVote1Candidates());
-			SendToAllClients(voteCalc.vote1Timer.ToString());
+            SendToAllClients(voteCalc.GetVote1Candidates());
 
-			//after first vote duration try get replies
-			await Task.Delay(1000 * (voteCalc.vote1Timer + voteCalc.coolDown));
-			//read each client for their answer
-			List<Task<Dictionary<int, string>>> clientVotes1 = new List<Task<Dictionary<int, string>>>();
-			foreach (var client in clients)
-			{
-				clientVotes1.Add(
-					AcceptVote1(client)
-				);
-			}
-			//wait for all tasks to complete before returning
-			await Task.WhenAll(clientVotes1);
-			Console.WriteLine("Stopped accepting votes in phase 1");
-	//		Console.WriteLine("amount of send emojis to client:"+survey.emojis.Count +"amountof surveydata in bytes: " +Encoding.Unicode.GetByteCount(survey.emojis[0].Name+ survey.emojis[1].Name + survey.emojis[2].Name + survey.emojis[3].Name + survey.emojis[4].Name + survey.emojis[5].Name + survey.emojis[6].Name));
-			//record all answers
-			foreach (var item in clientVotes1)
-			{
-				if (item.Result != null)
-				{
-					data.AddVote1Results(item.Result);
-				}
-			}
+            var voteDurationMs = 1000 * voteCalc.vote1Timer;
+            var cts = new CancellationTokenSource();
+            var token = cts.Token;
 
-			//prepare second vote and send it to all clients
-			voteCalc.calcVote2Candidates(data.GetVote1Results());
-			SendToAllClients(voteCalc.GetVote2Candidates());
-			SendToAllClients(voteCalc.vote2Timer.ToString());
+            var voteTasks = clients.Select(client => Task.Run(async () =>
+            {
+                var stream = client.GetStream();
+                var buffer = new byte[4];
 
-			//after vote 2 duration try get replies
-			await Task.Delay(1000 * (voteCalc.vote2Timer + voteCalc.coolDown));
+                while (!token.IsCancellationRequested)
+                {
+                    if (stream.DataAvailable)
+                    {
+                        try
+                        {
+                            var activity = await AcceptVote1(client);
+                            if (activity != null)
+                            {
+                                Console.WriteLine("Vote received");
+                                _activityVoteAnswerCount++;
+                                lock (data)
+                                {
+                                    data.AddVote1Results(activity);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error processing vote from client: {ex.Message}");
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        await Task.Delay(100); // non-blocking wait
+                    }
+                }
+            })).ToList();
 
-			//read each client for their answer
-			List<Task<string>> clientVotes2 = new List<Task<string>>();
-			foreach (var client in clients)
-			{
-				clientVotes2.Add(
-					AcceptVote2(client)
-				);
-			}
-			//wait for all tasks to complete before returning
-			await Task.WhenAll(clientVotes2);
-			Console.WriteLine("Stopped reading votes in phase 2");
+            await Task.Delay(voteDurationMs);
+            cts.Cancel();
 
-			//record all answers
-			foreach (var item in clientVotes2)
-			{
-				if (item.Result != null)
-				{
-					data.AddVote2Results(item.Result);
-				}
-			}
+            await Task.WhenAll(voteTasks);
+            Console.WriteLine("Stopped accepting activity votes");
+        }
 
+        public async Task SendActivityVoteResults()
+        {
+            Console.WriteLine("SendingActivity vote results");
+            //prepare result and send it to all clients
+            var result = data.GetVote1Results();
+            // Send the number of client that participated to the survey
+            result.Add(new Activity { Title = "Clients", ImageSource = "" }, clientCount);
+            var serializableResult = result.Select(kvp => new
+            {
+                Activity = new
+                {
+                    kvp.Key.Title,
+                    kvp.Key.ImageSource
+                },
+                Votes = kvp.Value
+            }).ToList();
 
-			Console.WriteLine("Stopped reading votes in phase 2");
+            // Send the JSON string to all clients
+            SendToAllClients(serializableResult);
+            Console.WriteLine("SendingActivity vote results finish");
 
-			//prepare result and send it to all clients
-			string result = voteCalc.calcFinalResult(data.GetVote2Results());
-			data.voteResult = result;
-			SendToAllClients(result);
-
-			isVoteConcluded = true;
-		}
+            isVoteConcluded = true;
+        }
 
 		/// <summary>
 		/// Blocks further clients from entering and answering the survey
@@ -227,11 +257,11 @@ namespace Prototype
 		/// <returns>
 		/// Task object representing the work
 		/// </returns>
-		public async Task CloseSurvey() {
-			tokenSource.Cancel();
-			await Task.WhenAll(cancellableTasks.ToArray());
-			return;
-		}
+        public async Task CloseSurvey() {
+            tokenSource.Cancel();
+            await Task.WhenAll(cancellableTasks.ToArray());
+            return;
+        }
 
 		/// <summary>
 		/// Starts activity vote with the connected clients
@@ -239,16 +269,23 @@ namespace Prototype
 		/// <remarks>
 		/// RunSurvey task must have been concluded before starting this task
 		/// </remarks>
-		public void StartActivityVote() {
-			//prepare first vote
-			isVoteConcluded = false;
-			voteCalc = new ActivityVote();
-			voteCalc.calcVote1Candidates(survey.emojis, data.GetEmojiResults());
-			Task.Run(() =>
-			{
-				Task voteTask = RunActivityVote();
-			});
-		}
+        public void StartActivityVote() {
+            //prepare first vote
+            Console.WriteLine("Start activity vote");
+            isVoteConcluded = false;
+            voteCalc = new ActivityVote();
+            var activites = voteCalc.calcVote1Candidates(survey.emojis, data.GetEmojiResults());
+            // Init the vote results to 0 for all candidates
+            foreach (var activity in activites)
+            {
+                Main.GetInstance().host.data.AddVote1Results(activity);
+            }
+
+            Task.Run(() =>
+            {
+                Task voteTask = RunActivityVote();
+            });
+        }
 
 		/// <summary>
 		/// Looping task replying to server discovery broadcasts from the clients so that they can learn the host's address
@@ -256,79 +293,94 @@ namespace Prototype
 		/// <returns>
 		/// Task resulting in a boolean indicating whether the task ended in a fatal error
 		/// </returns>
-		private async Task<bool> ReplyBroadcast() {
+        private async Task<bool> ReplyBroadcast() {
+            UdpClient? listener = null;
+            Socket? socket = null;
+            try
+            {
+                listener = new UdpClient(Const.Network.ServerUDPClientPort);
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
-			try
-			{
-				UdpClient listener = new UdpClient(Const.Network.ServerUDPClientPort);
-				Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                //loop to serve all broadcasts
+                while (true)
+                {
+                    Console.WriteLine("Waiting for broadcast");
+                    Task<UdpReceiveResult> broadcast = listener.ReceiveAsync();
 
-				//loop to serve all broadcasts
-				while (true)
-				{
-					Console.WriteLine("Waiting for broadcast");
-					Task<UdpReceiveResult> broadcast = listener.ReceiveAsync();
+                    //allow cancellation of this task between each udp message
+                    do
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            listener.Close();
+                            socket.Close();
+                            token.ThrowIfCancellationRequested();
+                        }
+                        await Task.WhenAny(new Task[] { Task.Delay(1000), broadcast });
+                    } while (broadcast.Status != TaskStatus.RanToCompletion);
 
-					//allow cancellation of this task between each udp message
-					do
-					{
-						if (token.IsCancellationRequested)
-						{
-							listener.Close();
-							s.Close();
-							token.ThrowIfCancellationRequested();
-						}
-						await Task.WhenAny(new Task[] { Task.Delay(1000), broadcast });
-					} while (broadcast.Status != TaskStatus.RanToCompletion);
+                    //message received
+                    string message = Encoding.Unicode.GetString(broadcast.Result.Buffer, 0, broadcast.Result.Buffer.Length);
+                    Console.WriteLine($"Received broadcast from {broadcast.Result.RemoteEndPoint} : {message}");
 
-					//message received
-					string message = Encoding.Unicode.GetString(broadcast.Result.Buffer, 0, broadcast.Result.Buffer.Length);
-					Console.WriteLine($"Received broadcast from {broadcast.Result.RemoteEndPoint} :");
-					Console.WriteLine($" {message}");
+                    if (message == survey.RoomCode)
+                    {
+                        //has this client answered the survey already?
+                        if (!clientHistory.Contains(broadcast.Result.RemoteEndPoint.Address))
+                        {
+                            //prepare message and destination
+                            byte[] sendbuf = Encoding.Unicode.GetBytes("Connect please");
+                            IPEndPoint ep = new IPEndPoint(broadcast.Result.RemoteEndPoint.Address, Const.Network.ClientUDPClientPort);
+                            //reply
+                            Console.WriteLine($"Replying... EP: {ep}");
+                            socket.SendTo(sendbuf, ep);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Old client tried to connect again");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Received invalid Room Code");
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("ReplyBroadcast task was cancelled gracefully");
+                return true;
+            }
+            catch (ObjectDisposedException e)
+            {
+                Console.WriteLine(e);
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine(e);
+            }
+            finally
+            {
+                // Always clean up resources, even if an exception occurs
+                if (listener != null)
+                {
+                    listener.Close();
+                    listener.Dispose();
+                }
 
-					if (message == survey.RoomCode)
-					{
-						//has this client answered the survey already?
-						if (!clientHistory.Contains(broadcast.Result.RemoteEndPoint.Address))
-						{
-							//prepare message and destination
-							byte[] sendbuf = Encoding.Unicode.GetBytes("Connect please");
-							IPEndPoint ep = new IPEndPoint(broadcast.Result.RemoteEndPoint.Address, Const.Network.ClientUDPClientPort);
+                if (socket != null)
+                {
+                    socket.Close();
+                    socket.Dispose();
+                }
+            }
 
-							//reply
-							Console.WriteLine($"Replying... EP: {ep}");
-							s.SendTo(sendbuf, ep);
-
-						} else
-						{
-							Console.WriteLine("Old client tried to connect again");
-						}
-					}
-					else
-					{
-						Console.WriteLine("Received invalid Room Code");
-					}
-				}
-			}
-			catch (OperationCanceledException)
-			{
-				Console.WriteLine("ReplyBroadcast task was cancelled gracefully");
-				return true;
-			}
-			catch (ObjectDisposedException e)
-			{
-				Console.WriteLine(e);
-			}
-			catch (SocketException e)
-			{
-				Console.WriteLine(e);
-			}
-
-			//handle unexpected errors
-			Console.WriteLine("Fatal error occured, aborting survey.");
-			tokenSource.Cancel();
-			return false;
-		}
+            //handle unexpected errors
+            Console.WriteLine("Fatal error occured, aborting survey.");
+            tokenSource.Cancel();
+            return false;
+        }
 
 		/// <summary>
 		/// Looping task allowing new tcp connections to be built to the host
@@ -339,160 +391,177 @@ namespace Prototype
 		/// <returns>
 		/// Task object resulting in a boolean indicating whether the task ended in a fatal error
 		/// </returns>
-		private async Task<bool> AcceptClient() {
+        private async Task<bool> AcceptClient() {
+            TcpListener? listener = null;
+            try
+            {
+                int tcpPort = _testMode ? 8000 : Const.Network.ServerTCPListenerPort;
+                listener = new TcpListener(IPAddress.Any, tcpPort);
+                listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
-			try
-			{
-				TcpListener listener = new TcpListener(IPAddress.Any, Const.Network.ServerTCPListenerPort);
-				listener.Start();
+                listener.Start();
+                Console.WriteLine($"TCP listener started on port {Const.Network.ServerTCPListenerPort}");
 
-				while (true)
-				{
-					Console.WriteLine("Waiting to accept tcp client");
-					Task<TcpClient> newClient = null;
-					newClient = listener.AcceptTcpClientAsync();
+                while (true)
+                {
+                    Console.WriteLine("Waiting to accept tcp client");
+                    Task<TcpClient> newClient = listener.AcceptTcpClientAsync();
 
-					//Allow cancellation of task between adding each client
-					do
-					{
-						if (token.IsCancellationRequested)
-						{
-							listener.Stop();
-							token.ThrowIfCancellationRequested();
-						}
-						await Task.WhenAny(new Task[] { Task.Delay(1000), newClient });
-					} while (newClient.Status != TaskStatus.RanToCompletion);
-
-					//Child task to communicate with new client
-					Task childtask = Task.Run(() => ServeNewClient(newClient.Result, token));
-				}				
-			}
-			catch (OperationCanceledException)
-			{
-				Console.WriteLine("AcceptClient task was cancelled gracefully");
-				return true;
-			}
-			catch (InvalidOperationException e)
-			{
-				Console.WriteLine(e);
-			}
-			catch (SocketException e)
-			{
-				Console.WriteLine(e);
-			}
-
-			//handle unexpected errors
-			Console.WriteLine("Fatal error occured, aborting survey.");
-			tokenSource.Cancel();
-			return false;
-		}
-
-		/// <summary>
-		/// Services a freshly joined client by sending initial data and waiting for their emoji answer
-		/// </summary>
-		/// <param name="client">
-		/// The client to serve
-		/// </param>
-		/// <param name="token">
-		/// The cancellation token
-		/// </param>
-		private async void ServeNewClient(TcpClient client, CancellationToken token)
-		{
-			try
-			{
-				//send intro message
-				byte[] sendBuffer = Encoding.Unicode.GetBytes(survey.introMessage);				
-				NetworkStream ns = client.GetStream();
-
-				await ns.WriteAsync(sendBuffer, 0, sendBuffer.Length);
-				//Emoji1
-				if (survey.emojis.Count > 1)
-				{
-					
-					if (survey.emojis.Count == 2)
-					{
-						byte[] sendBuffer1 = Encoding.Unicode.GetBytes(survey.emojis[0].Name + "," + survey.emojis[1].Name + ",");
-						await ns.WriteAsync(sendBuffer1, 0, sendBuffer1.Length);
-
-					}
-					else if(survey.emojis.Count == 3)
+                    // Allow cancellation of task between adding each client
+                    do
                     {
-						byte[] sendBuffer1 = Encoding.Unicode.GetBytes(survey.emojis[0].Name + "," + survey.emojis[1].Name + "," + survey.emojis[2].Name + ",");
-						await ns.WriteAsync(sendBuffer1, 0, sendBuffer1.Length);
+                        if (token.IsCancellationRequested)
+                        {
+                            listener.Stop();
+                            token.ThrowIfCancellationRequested();
+                        }
+                        await Task.WhenAny(new Task[] { Task.Delay(1000), newClient });
+                    } while (newClient.Status != TaskStatus.RanToCompletion);
 
-					}
-					else if (survey.emojis.Count == 4)
-					{
-						byte[] sendBuffer1 = Encoding.Unicode.GetBytes(survey.emojis[0].Name + "," + survey.emojis[1].Name + "," + survey.emojis[2].Name + "," + survey.emojis[3].Name + ",");
-						await ns.WriteAsync(sendBuffer1, 0, sendBuffer1.Length);
-					}
-					else if (survey.emojis.Count == 5)
-					{
-						byte[] sendBuffer1 = Encoding.Unicode.GetBytes(survey.emojis[0].Name + "," + survey.emojis[1].Name + "," + survey.emojis[2].Name + "," + survey.emojis[3].Name + "," + survey.emojis[4].Name + ",");
-						await ns.WriteAsync(sendBuffer1, 0, sendBuffer1.Length);
-					}
-					else if (survey.emojis.Count == 6)
-					{
-						byte[] sendBuffer1 = Encoding.Unicode.GetBytes(survey.emojis[0].Name + "," + survey.emojis[1].Name + "," + survey.emojis[2].Name + "," + survey.emojis[3].Name + "," + survey.emojis[4].Name + "," + survey.emojis[5].Name + ",");
-						await ns.WriteAsync(sendBuffer1, 0, sendBuffer1.Length);
+                    // For emulator testing, assume any connection is valid and allowed
+                    // Otherwise stick with the normal validation logic in ServeNewClient
+                    if (_testMode)
+                    {
+                        Console.WriteLine("Emulator testing mode: Accepting client without UDP validation");
+                        TcpClient client = newClient.Result;
+                        IPAddress clientIp = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
+                        
+                        // Read the room code that the client sent directly
+                        NetworkStream stream = client.GetStream();
+                        byte[] buffer = new byte[128];
+                        int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                        string roomCode = Encoding.Unicode.GetString(buffer, 0, bytesRead);
+                        
+                        Console.WriteLine($"Received direct connection with room code: {roomCode}");
+                        
+                        // Validate room code
+                        if (roomCode == survey.RoomCode)
+                        {
+                            // Add to client history to prevent duplicates
+                            if (!clientHistory.Contains(clientIp))
+                            {
+                                clientHistory.Add(clientIp);
+                                Task childTask = Task.Run(() => ServeNewClient(client, token));
+                            }
+                            else
+                            {
+                            Console.WriteLine("Client already connected previously");
+                            // You might want to handle reconnection differently
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid room code received");
+                            client.Close();
+                        }
+                    }
+                    else
+                    {
+                        // Normal operation - use existing ServeNewClient
+                        Task childtask = Task.Run(() => ServeNewClient(newClient.Result, token));
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("AcceptClient task was cancelled gracefully");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error in AcceptClient: {e.Message}");
+                Console.WriteLine(e);
+            }
+            finally
+            {
+                if (listener != null)
+                {
+                    listener.Stop();
+                }
+            }
 
-					}
-					else if (survey.emojis.Count == 7)
-					{
-						byte[] sendBuffer1 = Encoding.Unicode.GetBytes(survey.emojis[0].Name + "," + survey.emojis[1].Name + "," + survey.emojis[2].Name + "," + survey.emojis[3].Name + "," + survey.emojis[4].Name + "," + survey.emojis[5].Name + "," + survey.emojis[6].Name + ",");
-						await ns.WriteAsync(sendBuffer1, 0, sendBuffer1.Length);
-					}
-			//		byte[] sendBuffer1 = Encoding.Unicode.GetBytes(survey.emojis[0].Name + "," + survey.emojis[1].Name + "," + survey.emojis[2].Name + ",");
-			//	await ns.WriteAsync(sendBuffer1, 0, sendBuffer1.Length);
-			}
-				//wait for emoji from client, expecting 1 int
-				byte[] buffer = new byte[4];
-				Task<int> emojiReply = ns.ReadAsync(buffer, 0, buffer.Length);
+            //handle unexpected errors
+            Console.WriteLine("Fatal error occured, aborting survey.");
+            tokenSource.Cancel();
+            return false;
+        }
 
-				//allow cancellation of task here.
-				do
-				{
-					if (token.IsCancellationRequested)
-					{
-						client.Close();
-						token.ThrowIfCancellationRequested();
-					}
-					await Task.WhenAny(new Task[] { Task.Delay(1000), emojiReply });
-				} while (emojiReply.Status != TaskStatus.RanToCompletion);
+        /// <summary>
+        /// Services a freshly joined client by sending initial data and waiting for their emoji answer
+        /// </summary>
+        /// <param name="client">
+        /// The client to serve
+        /// </param>
+        /// <param name="token">
+        /// The cancellation token
+        /// </param>
+        private async void ServeNewClient(TcpClient client, CancellationToken token)
+        {
+            try
+            {
+                NetworkStream ns = client.GetStream();
 
-				if (emojiReply.Result == 0)
-				{
+                string introMessage = survey.introMessage;
+                byte[] introBytes = Encoding.Unicode.GetBytes(introMessage);
+                byte[] introSizeBytes = BitConverter.GetBytes(introBytes.Length);
+
+                await ns.WriteAsync(introSizeBytes, 0, introSizeBytes.Length);
+                await ns.WriteAsync(introBytes, 0, introBytes.Length);
+
+                string emojiData = string.Join(",", survey.emojis.Select(e => e.Name)) + ",";
+                byte[] emojiBytes = Encoding.Unicode.GetBytes(emojiData);
+                byte[] emojiSizeBytes = BitConverter.GetBytes(emojiBytes.Length);
+
+                await ns.WriteAsync(emojiSizeBytes, 0, emojiSizeBytes.Length);
+                await ns.WriteAsync(emojiBytes, 0, emojiBytes.Length);
+
+                byte[] buffer = new byte[4];
+                Task<int> emojiReply = ns.ReadAsync(buffer, 0, buffer.Length);
+
+                //allow cancellation of task here.
+                do
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        client.Close();
+                        token.ThrowIfCancellationRequested();
+                    }
+                    await Task.WhenAny(new Task[] { Task.Delay(1000), emojiReply });
+                } while (emojiReply.Status != TaskStatus.RanToCompletion);
+
+                if (emojiReply.Result == 0)
+                {
 					//we read nothing out of disconnected network, nice
 					//we don't want this client
-					return;
-				}
+                    return;
+                }
 
 				//process reply
-				string reply = Encoding.Unicode.GetString(buffer, 0, emojiReply.Result);
-				Console.WriteLine($"Bytes read: {emojiReply.Result}");
-				Console.WriteLine($"Client sent: {reply}");
+                string reply = Encoding.Unicode.GetString(buffer, 0, emojiReply.Result);
+                Console.WriteLine($"Bytes read: {emojiReply.Result}");
+                Console.WriteLine($"Client sent: {reply}");
 
 				//add to surveydata
-				data.AddEmojiResults(int.Parse(reply));
+                data.AddEmojiResults(int.Parse(reply));
 
 				//add this client to list of clients
-				clientCount++;
-				clients.Add(client);
-				clientHistory.Add(((IPEndPoint)client.Client.RemoteEndPoint).Address);
+                clientCount++;
+                clients.Add(client);
+                clientHistory.Add(((IPEndPoint)client.Client.RemoteEndPoint).Address);
 				//flush the netstream for others to use too
-				ns.Flush();
-			}
-			catch (OperationCanceledException)
-			{
-				Console.WriteLine("Cancelling task, Client was dropped for being slow poke");
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine($"Something went wrong in first communication with client: {client.Client.RemoteEndPoint}");
-				Console.WriteLine(e);
-				client.Close();
-			}
-		}
+                ns.Flush();
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("Cancelling task, Client was dropped for being slow poke");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Something went wrong in first communication with client: {client.Client.RemoteEndPoint}");
+                Console.WriteLine(e);
+                client.Close();
+            }
+        }
 
 		/// <summary>
 		/// Tries to read the first phase vote answer from a client
@@ -506,123 +575,73 @@ namespace Prototype
 		/// <returns>
 		/// Task representing the work
 		/// </returns>
-		private async Task<Dictionary<int, string>> AcceptVote1(TcpClient client) {
+        private async Task<Activity?> AcceptVote1(TcpClient client)
+        {
+            try
+            {
+                NetworkStream ns = client.GetStream();
 
-			try
-			{
-				//waiting for vote for limited time by setting network stream read timeout
-				byte[] buffer = new byte[2048];
-				NetworkStream ns = client.GetStream();
-				int bytesRead = 0;
-				Console.WriteLine("Reading client vote 1");
+                // Read the length prefix (4 bytes)
+                byte[] lengthBuffer = new byte[4];
+                int bytesRead = await ns.ReadAsync(lengthBuffer, 0, lengthBuffer.Length);
+                if (bytesRead != 4)
+                {
+                    Console.WriteLine("Failed to read length prefix or connection closed");
+                    return null;
+                }
 
-				//if client does not reply anything, data is not available.
-				if (!ns.DataAvailable)
-				{
-					return null;
-				}
+                // Determine the size of the JSON message
+                int messageSize = BitConverter.ToInt32(lengthBuffer, 0);
+                Console.WriteLine($"Expecting JSON message of size: {messageSize} bytes");
 
-				bytesRead = await ns.ReadAsync(buffer, 0, buffer.Length);
+                // Read the JSON message
+                byte[] messageBuffer = new byte[messageSize];
+                bytesRead = await ns.ReadAsync(messageBuffer, 0, messageSize);
+                if (bytesRead != messageSize)
+                {
+                    Console.WriteLine($"Failed to read complete JSON message. Expected {messageSize} bytes, got {bytesRead}");
+                    return null;
+                }
 
-				Console.WriteLine($"DEBUG: AcceptVotes 1 read {bytesRead} bytes from: {client}");
+                // Deserialize the JSON into a dictionary
+                string json = Encoding.Unicode.GetString(messageBuffer);
+                Console.WriteLine($"Received JSON: {json}");
+                var resultDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 
-				//if client has exited read results in 0 bytes read
-				if (bytesRead <= 0)
-				{
-					return null;
-				}
-				
-				//read was successful, expecting JSON string containing Dictionary<int, string>
-				return JsonConvert.DeserializeObject<Dictionary<int, string>>(Encoding.Unicode.GetString(buffer, 0, bytesRead));
+                if (resultDict != null && resultDict.ContainsKey("title") && resultDict.ContainsKey("imageSource"))
+                {
+                    // Map the dictionary to an Activity object
+                    return new Activity
+                    {
+                        Title = resultDict["title"],
+                        ImageSource = resultDict["imageSource"]
+                    };
+                }
 
-			}
-			catch (JsonException e)
-			{
-				Console.WriteLine("Received bad JSON");
-				Console.WriteLine(e);
-				
-			}
-			catch (ObjectDisposedException e)
-			{
-				Console.WriteLine("Connection lost to client");
-				Console.WriteLine(e);
-			}
-			catch (System.IO.IOException e)
-			{
-				Console.WriteLine("Error reading socket or network");
-				Console.WriteLine(e);
-			}
+                Console.WriteLine("Invalid data received. Missing required keys.");
+                return null;
+            }
+            catch (JsonException e)
+            {
+                Console.WriteLine("Received bad JSON");
+                Console.WriteLine(e);
+            }
+            catch (ObjectDisposedException e)
+            {
+                Console.WriteLine("Connection lost to client");
+                Console.WriteLine(e);
+            }
+            catch (System.IO.IOException e)
+            {
+                Console.WriteLine("Error reading socket or network");
+                Console.WriteLine(e);
+            }
 
 			//so... you have chosen death
-			clients.Remove(client);
-			clientCount--;
-			return null;
-		}
-
-		/// <summary>
-		/// Tries to read the second phase vote answer from the client
-		/// </summary>
-		/// <remarks>
-		/// Not all clients send a full answer, or an answer at all
-		/// </remarks>
-		/// <param name="client">
-		/// The client to try get the answer from
-		/// </param>
-		/// <returns>
-		/// Task representing the work
-		/// </returns>
-		private async Task<string> AcceptVote2(TcpClient client) {
-			try
-			{
-				//waiting for vote for limited time by setting network stream read timeout
-				byte[] buffer = new byte[128];
-				NetworkStream ns = client.GetStream();
-				int bytesRead = 0;
-				Console.WriteLine("Reading client vote 2");
-
-				//if client does not reply anything, data is not available.
-				if (!ns.DataAvailable)
-				{
-					return null;
-				}
-
-				bytesRead = await ns.ReadAsync(buffer, 0, buffer.Length);
-				Console.WriteLine($"DEBUG: AcceptVotes 2 read {bytesRead} bytes from: {client}");
-
-				//if client has exited read results in 0 bytes read
-				if (bytesRead == 0)
-				{
-					return null;
-				}
-
-				//read was successful, expecting string containing final activity vote
-				return Encoding.Unicode.GetString(buffer, 0, bytesRead);
-
-			}
-			catch (JsonException e)
-			{
-				Console.WriteLine("Received bad JSON");
-				Console.WriteLine(e);
-				
-			}
-			catch (ObjectDisposedException e)
-			{
-				Console.WriteLine("Connection lost to client");
-				Console.WriteLine(e);
-				
-			}
-			catch (System.IO.IOException e)
-			{
-				Console.WriteLine("Error reading socket or network");
-				Console.WriteLine(e);
-			}
-
-			//we don't do that here
-			clients.Remove(client);
-			clientCount--;
-		
-			return null;
-		}
+            clients.Remove(client);
+            clientCount--;
+            return null;
+        }
 
 		/// <summary>
 		/// Sends all clients a serialized JSON string of an object
@@ -630,98 +649,78 @@ namespace Prototype
 		/// <param name="obj">
 		/// The object representing the data to be sent
 		/// </param>
-		private void SendToAllClients(object obj) {
+        private void SendToAllClients(object obj) {
+            byte[] messageData = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(obj));
+            byte[] lengthPrefix = BitConverter.GetBytes(messageData.Length);
 
-			//prepare data for transmission
-			byte[] message;
-			message = Encoding.Unicode.GetBytes(
-				JsonConvert.SerializeObject(obj)
-			);
+            // Iterate each recorded client
+            foreach (var client in clients)
+            {
+                try
+                {
+                    NetworkStream ns = client.GetStream();
+                    if (ns.CanWrite)
+                    {
+                        // Write the length prefix and message
+                        ns.Write(lengthPrefix, 0, lengthPrefix.Length);
+                        ns.Write(messageData, 0, messageData.Length);
+                        // Make sure data is sent
+                        ns.Flush();
+                    }
+                }
+                catch (ObjectDisposedException e)
+                {
+                    Console.WriteLine($"Connection lost with client: {client.Client.RemoteEndPoint}. Dropping client");
+                    Console.WriteLine(e);
+                    clients.Remove(client);
+                    clientCount--;
+                }
+                catch (System.IO.IOException e)
+                {
+                    Console.WriteLine("Error reading socket or network");
+                    Console.WriteLine(e);
+                    clients.Remove(client);
+                    clientCount--;
+                }
+            }
+        }
 
-			//iterate each recorded client
-			foreach (var client in clients)
-			{
-				//catch errors per client
-				try
-				{
-					NetworkStream ns = client.GetStream();
-
-					if (ns.CanWrite)
-					{
-						ns.Write(message, 0, message.Length);
-					}
-				}
-				catch (ObjectDisposedException e)
-				{
-					Console.WriteLine($"Connection lost with client: {client.Client.RemoteEndPoint}. Dropping client");
-					Console.WriteLine(e);
-					clients.Remove(client);
-					clientCount--;
-				}
-				catch (System.IO.IOException e)
-				{
-					Console.WriteLine("Error reading socket or network");
-					Console.WriteLine(e);
-					clients.Remove(client);
-					clientCount--;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Sends all clients a message
-		/// </summary>
-		/// <param name="text">
-		/// The message to be sent
-		/// </param>
-		private void SendToAllClients(string text)
-		{
-
-			//prepare data for transmission
-			byte[] message;
-			message = Encoding.Unicode.GetBytes( text );
-
-			//iterate each recorded client
-			foreach (var client in clients)
-			{
-				//catch errors per client
-				try
-				{
-					NetworkStream ns = client.GetStream();
-
-					if (ns.CanWrite)
-					{
-						ns.Write(message, 0, message.Length);
-					}
-				}
-				catch (ObjectDisposedException e)
-				{
-					Console.WriteLine($"Connection lost with client: {client.Client.RemoteEndPoint}. Dropping client");
-					Console.WriteLine(e);
-					clients.Remove(client);
-					clientCount--;
-				}
-				catch (System.IO.IOException e)
-				{
-					Console.WriteLine("Error reading socket or network");
-					Console.WriteLine(e);
-					clients.Remove(client);
-					clientCount--;
-				}
-			}
-		}
+        public int GetActivityVoteAnswerCount()
+        {
+            return _activityVoteAnswerCount;
+        }
 
 		/// <summary>
 		/// Sufficiently terminates the host processes and client connections when the survey concludes or is aborted
 		/// </summary>
-		public void DestroyHost() {
-			//cancel tasks
-			tokenSource.Cancel();
-			//close all connections
-			foreach (var item in clients)
-			{
-				item.Close();
-			}
-		}
-	}
+        public void DestroyHost() {
+            Console.WriteLine("Destroying survey host");
+            //cancel tasks
+            tokenSource.Cancel();
+
+            // Close all connections
+            foreach (var item in clients)
+            {
+                item.Close();
+            }
+
+            // Reset state for new survey
+            clients.Clear();
+            clientCount = 0;
+            data = new SurveyData();
+            survey = SurveyManager.GetInstance().GetSurvey();
+            // Create new cancellation mechanism
+            tokenSource.Dispose();
+            tokenSource = new CancellationTokenSource();
+            token = tokenSource.Token;
+
+            // Clear task list
+            cancellableTasks.Clear();
+
+            // Reset voting state
+            _activityVoteAnswerCount = 0;
+            voteCalc = null;
+            isVoteConcluded = false;
+        }
+    }
 }

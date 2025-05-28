@@ -1,6 +1,7 @@
 ﻿/*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Riina Kaipia
 
 This file is part of "Juttunurkka".
 
@@ -21,9 +22,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -33,17 +35,17 @@ namespace Prototype
         public Omakysymys()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
 
             BindingContext = this;
         }
 
         async void JatkaButtonClicked(object sender, EventArgs e)
         {
-            //kyselyn johdatuslause asetetaan.
-            //SurveyManager.GetInstance().GetSurvey().introMessage = selectedItem;
 
+            string omaKysymys = Kysymys.Text;
+            SurveyManager.GetInstance().GetSurvey().introMessage = omaKysymys;
 
-            //siirrytään "luo uus kysely 2/3" sivulle 
             await Navigation.PushAsync(new LuoKyselyEmojit());
         }
 
@@ -61,7 +63,7 @@ namespace Prototype
             else
             {
                 // siirrytään etusivulle
-                await Navigation.PopToRootAsync();
+                await Navigation.PopAsync();
             }
         }
     }

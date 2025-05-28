@@ -20,8 +20,10 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -40,7 +42,7 @@ namespace Prototype
         public class CollectionItem
         {
             public Emoji Item { get; set; } = null;
-            public IList<string> ActivityChoises { get; set; } = null;
+            public IList<Activity> ActivityChoises { get; set; } = null;
             public string Color { get; set; } = null;
         }
 
@@ -73,7 +75,7 @@ namespace Prototype
             {
                 CollectionItem i = new CollectionItem();
                 i.Item = item;
-                i.ActivityChoises = item.activities;
+                i.ActivityChoises = item.Activities;
                 switch (item.Impact)
                 {
                     case "positive":
@@ -148,7 +150,7 @@ namespace Prototype
         void btnPopupButton_Clicked(object sender, EventArgs e)
         {
         
-            if (sender is Button b && b.Parent is Grid g && g.Children[2] is Frame f)
+            if (sender is Button b && b.Parent is Microsoft.Maui.Controls.Compatibility.Grid g && g.Children[2] is Frame f)
             {
                 if (f.IsVisible == false) { 
               

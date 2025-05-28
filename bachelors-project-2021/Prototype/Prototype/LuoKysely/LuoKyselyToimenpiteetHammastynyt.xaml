@@ -1,8 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
-
+          2025 Riina Kaipia, Eemil Alamäki
+    
 This file is part of "Juttunurkka".
 
 Juttunurkka is free software: you can redistribute it and/or modify
@@ -18,10 +19,11 @@ You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.LuoKyselyToimenpiteetHammastynyt"
              Title="Juttunurkka"
+             BackgroundColor="#ffea7f"
              >
 
     <StackLayout Spacing="40">
@@ -36,8 +38,8 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
               HorizontalOptions="CenterAndExpand"
               HorizontalTextAlignment="Center"
               FontAttributes="Bold"
-              FontSize="15"
-              TextColor="#4383EF" 
+              FontSize="25"
+              TextColor="Black" 
               Margin="0,40,0,0"/>
             
             <Image Source="Emoji1.jpg"
@@ -45,28 +47,17 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                    HeightRequest="60"
                    Margin="0,30,0,0"
             />
-        </StackLayout>        
-        
-   <!--     <Label Text="Valitse aktiviteetit hymiölle  
-               Valitse vähintään 2"
-            VerticalOptions="Start" 
-            HorizontalOptions="CenterAndExpand"
-            HorizontalTextAlignment="Center"
-            FontSize="25"
-            TextColor="Black"   
-            Margin="0,-20,0,0"
-          -->
-
-        <StackLayout Orientation="Horizontal"
-                     VerticalOptions="Start"
-                     HorizontalOptions="EndAndExpand"
-                     Margin="0,0,25,0">
-            <!--
-            <Label Text="Valitse kaikki"
-                   FontSize="25"/>
-            <CheckBox Color="Black"/> -->
-
         </StackLayout>
+
+        <Label Text="Valitse aktiviteetit hymiölle  
+               Valitse 2"
+               VerticalOptions="Start"
+               HorizontalOptions="CenterAndExpand"
+               HorizontalTextAlignment="Center"
+               FontSize="24"
+               TextColor="Black"
+               Margin="0,-20,0,0" />
+       
 
         <Button Text="Vaihtoehdot"
             TextColor="black"
@@ -74,9 +65,9 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             VerticalOptions="CenterAndExpand" 
             HorizontalOptions="CenterAndExpand" 
             BorderColor="#4383EF"
-            BackgroundColor="Transparent"
-            Font="15"
-            Margin="20,0,10,-40"
+            BackgroundColor="White"
+            FontSize="22"
+            Margin="0,0,0,0"
             CornerRadius="10"
             HeightRequest="50"
             WidthRequest="340" 
@@ -84,15 +75,15 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
         <!--"dropdown"-->
         <Frame
-            HorizontalOptions="CenterAndExpand" 
-            VerticalOptions="CenterAndExpand"
+            HorizontalOptions="Center" 
+            VerticalOptions="Center"
             x:Name="popupSelection"
             HasShadow="True"
-            Margin="20,0,10,48" 
+            Margin="10,10,10,10" 
             WidthRequest="340"
-            HeightRequest="200"
+            HeightRequest="300"
             Padding="1"
-            BackgroundColor="Transparent"
+            BackgroundColor="White"
             BorderColor="#4383EF"
             CornerRadius="10"
             IsVisible="true">
@@ -100,8 +91,7 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             <CollectionView 
             HorizontalOptions="CenterAndExpand" 
             VerticalOptions="CenterAndExpand"
-          
-            HeightRequest="470" 
+            HeightRequest="300" 
             ItemsSource="{Binding Items} "  >
 
                 <CollectionView.ItemTemplate >
@@ -112,21 +102,27 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                    RowDefinitions="Auto, *"
                   ColumnDefinitions="Auto, *">
                             <CollectionView x:Name="Collection" 
-                                        ItemsSource= "{Binding ActivityChoises}"
-                                        SelectionMode= "Multiple" 
-                                        SelectedItems="{Binding Selected, Mode=TwoWay}">
+                                            ItemsSource="{Binding ActivityChoises}"
+                                            SelectionMode="Multiple"
+                                            SelectedItems="{Binding Selected, Mode=TwoWay}"
+                                            SelectionChanged="OnSelectionChanged"
+                                            SelectionChangedCommandParameter="{Binding .}">
+
 
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Padding="1"
                                                   RowDefinitions="Auto, *"
+                                                  HeightRequest="100"
+                                                  WidthRequest="340"
                                                   ColumnDefinitions="Auto, *"  >
 
                                             <Label 
-                                                    Text="{Binding .}" 
+                                                    Text="{Binding Title}" 
                                                     TextColor="Black"
-                                                    FontSize="10"
+                                                    FontSize="20"
                                                     Margin="5,10,0,5"
+                                                    WidthRequest="340"
                                                 />
 
 
@@ -135,6 +131,7 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                                                         BackgroundColor="DarkGray"
                                                         Grid.ColumnSpan="2"
                                                         Grid.Row="2"
+                                                        WidthRequest="340"
                                                         VerticalOptions="End"/>
 
 
@@ -161,28 +158,20 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             VerticalOptions="EndAndExpand"
             HorizontalOptions="CenterAndExpand">
 
-            <Button Grid.Column="1"
-                Text="Edellinen"
-                Clicked="EdellinenButtonClicked"
-                VerticalOptions="EndAndExpand"
-                HorizontalOptions="CenterAndExpand" 
-                Font="19"
-                Margin="20,0,10,40"
-                CornerRadius="10"
-                HeightRequest="50"
-                WidthRequest="150"
-            />
-
             <Button Grid.Column="2" 
                 Text="Jatka"
                 Clicked="JatkaButtonClicked" 
                 VerticalOptions="EndAndExpand" 
                 HorizontalOptions="CenterAndExpand" 
-                Font="19"
+                FontSize="19"
                 Margin="20,0,10,40"
                 CornerRadius="10"
+                FontAttributes="Bold"
                 HeightRequest="50"
                 WidthRequest="150"
+                BorderColor="Transparent"
+                BackgroundColor="#feba4f"
+                TextColor="Black"
             />
         </Grid>
 

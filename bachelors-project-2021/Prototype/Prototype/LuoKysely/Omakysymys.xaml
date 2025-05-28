@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Riina Kaipia
 
 This file is part of "Juttunurkka".
 
@@ -17,10 +18,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.Omakysymys"
-             Title="">
+             Title="Luo oma kysymys"
+             BackgroundColor="#ffea7f">
 
 
 
@@ -33,8 +35,8 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             HorizontalTextAlignment="Center"
             FontAttributes="Bold"
             FontSize="30"
-            TextColor="#4383EF" 
-            Margin="0,50,0,0"
+            TextColor="Black" 
+            Margin="0,80,0,0"
         />
 
 
@@ -47,9 +49,11 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             HeightRequest="150"
             WidthRequest="300"
             >
-            <Entry Placeholder="Kirjoita teksti..."
+            <Entry     x:Name="Kysymys"
+                       Placeholder="Kirjoita teksti..."
                        VerticalOptions="StartAndExpand"
-                       MaxLength="50"
+                       MaxLength="40"
+                       FontSize="20"
                        BackgroundColor="White"
                  />
         </Frame>
@@ -60,29 +64,38 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
             ColumnDefinitions="Auto, Auto"
             VerticalOptions="End"
             HorizontalOptions="CenterAndExpand">
+            
 
-            <Button Grid.Column="1"
+            <Button Grid.Column="0"
                 Text="Edellinen"
                 Clicked="EdellinenButtonClicked"
                 VerticalOptions="EndAndExpand"
                 HorizontalOptions="CenterAndExpand" 
-                Font="19"
+                FontSize="19"
                 Margin="20,0,10,40"
+                BorderColor="Transparent"
                 CornerRadius="10"
                 HeightRequest="50"
                 WidthRequest="150"
+                BackgroundColor="#feba4f"
+                TextColor="Black"
+                FontAttributes="Bold"
             />
 
-            <Button Grid.Column="2" 
+            <Button Grid.Column="1" 
                 Text="Jatka"
                 Clicked="JatkaButtonClicked" 
                 VerticalOptions="EndAndExpand" 
                 HorizontalOptions="CenterAndExpand" 
-                Font="19"
+                FontSize="19"
                 Margin="20,0,10,40"
+                BorderColor="Transparent"
                 CornerRadius="10"
                 HeightRequest="50"
                 WidthRequest="150"
+                BackgroundColor="#feba4f"
+                TextColor="Black"
+                FontAttributes="Bold"
                 
             />
 

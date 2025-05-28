@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Eemil Alamäki
 
 This file is part of "Juttunurkka".
 
@@ -17,11 +18,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.KyselynTarkastelu"
-             Title="Tarkastele kyselyä">
-
+             Title="Tarkastele kyselyä"
+             BackgroundColor="#ffea7f"
+             >
     <!-- poista kysely -nappi-->
 
     <ContentPage.ToolbarItems>
@@ -36,10 +38,11 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
         <StackLayout Orientation="Horizontal" VerticalOptions="Center">
 
-            <Label Text="kyselyn tarkastelu"
+            <Label Text="Kyselyn tarkastelu"
                    x:Name="title"
                    Margin="0 ,0,0,0"
                    FontSize="20" 
+                   FontAttributes="Bold"
                    HorizontalOptions="Center"  
                    VerticalOptions="Center"/>
         </StackLayout>
@@ -64,12 +67,14 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                 <Label Margin="0,10,0,10"
                     Text="{Binding introMessage}"
                     TextColor="Black"
-                    FontSize="20"/>
+                    FontAttributes="Bold"
+                    FontSize="22"/>
 
                 <Label Margin="0,10,0,10"
                         Text="{Binding roomCode}"
                         TextColor="Black"
-                        FontSize="20"/>
+                        FontAttributes="Bold"
+                        FontSize="22"/>
 
                 <CollectionView ItemsSource="{Binding Emojit}"
                    HeightRequest="400" >
@@ -93,9 +98,14 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                                         Margin="10,10,10,0"
                                         VerticalOptions="Center"
                                         HorizontalOptions="CenterAndExpand"
-                                        WidthRequest="300"
+                                        WidthRequest="260"
                                         HeightRequest="45"
-                                        Text="toimenpiteet" 
+                                        FontSize="20"
+                                        TextColor="Black"
+                                        FontAttributes="Bold"
+                                        BackgroundColor="#feba4f"
+                                        BorderColor="Transparent"
+                                        Text="Toimenpiteet" 
                                         Clicked="btnPopupButton_Clicked"
                                 />
 
@@ -168,20 +178,36 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
             </CollectionView>
 
-                    <Grid  Margin="0,30,0,0">
-                            <Button Grid.Column="1" 
-                                    Text="Jaa kysely"
-                                    Clicked="JaaClicked"
-                                    HeightRequest="65"
-                                    CornerRadius="100"/>
+                <Grid RowDefinitions="Auto, Auto"
+                    ColumnDefinitions="Auto, Auto"
+                    ColumnSpacing="20"
+                    HorizontalOptions="Center"
+                    Margin="0,50,0,0">
+                    <Button Grid.Column="0" 
+                            Text="Jaa kysely"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            Clicked="JaaClicked"
+                            FontSize="20"
+                            BorderColor="Transparent"
+                            HeightRequest="65"
+                            CornerRadius="10"
+                            WidthRequest="160"
+                            BackgroundColor="#feba4e"/>
 
-                            <Button x:Name="MuokkaaButton"
-								    Text="Muokkaa"
-                                    Clicked="MuokkaaClicked"
-                                    BackgroundColor="{StaticResource QuinaryColor}"
-                                    HeightRequest="65"
-                                    CornerRadius="100"/>
-                        </Grid>
+                    <Button Grid.Column="1" 
+                            x:Name="MuokkaaButton"
+							Text="Muokkaa"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            FontSize="20"
+                            Clicked="MuokkaaClicked"
+                            BackgroundColor="#feba4f"
+                            BorderColor="Transparent"
+                            HeightRequest="65"
+                            WidthRequest="160"
+                            CornerRadius="10"/>
+                </Grid>
 
         </StackLayout>
         </StackLayout>
@@ -199,7 +225,7 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
             <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
                 <StackLayout
-                    BackgroundColor="White"
+                    BackgroundColor="#feba4f"
                     HeightRequest="165"
                     Orientation="Vertical"
                     WidthRequest="300">
@@ -225,18 +251,20 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                     <AbsoluteLayout Margin="20"  VerticalOptions ="EndAndExpand" HorizontalOptions="CenterAndExpand">
                         <Grid Margin="0,0,0,0">
                             <Button Grid.Column="1"   
-                                     TextColor="Gold"
+                                     TextColor="Black"
                                      FontAttributes="Bold"
                                      BackgroundColor="Transparent"
                                      BorderColor="Transparent"                                  
-                                     Text="Kyllä"  
+                                     Text="Kyllä"
+                                     Margin="-50,10,10,10"
                                      Clicked="Kyllä_Clicked"/>
                             <Button                               
                                      Text="Ei" 
-                                     TextColor="{StaticResource QuinaryColor}"
+                                     TextColor="Black"
                                      FontAttributes="Bold"
                                      BackgroundColor="Transparent"
-                                     BorderColor="Transparent"     
+                                     BorderColor="Transparent"
+                                     Margin="50,10,10,10"
                                      Clicked="Ei_Clicked" />
                         </Grid>
 

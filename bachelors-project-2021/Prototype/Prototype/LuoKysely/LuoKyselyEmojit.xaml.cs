@@ -23,9 +23,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -48,6 +49,7 @@ namespace Prototype
         public LuoKyselyEmojit()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
 
             //alustetaan emojit kyselyn emojeilla
             Emojit = new List<CollectionItem>();
@@ -80,22 +82,8 @@ namespace Prototype
 
         void OnCheckBoxCheckedChanged(object sender, CheckedChangedEventArgs e)
         {
-            if (EmojisSet())
-            {
-                JatkaBtn.IsEnabled = true;
-            }
-            else
-            {
-                JatkaBtn.IsEnabled = false; 
-               
-            }
+            JatkaBtn.IsEnabled = EmojisSet();
         }
-
-        void OnAllCheckBoxCheckedChanged(object sender, CheckedChangedEventArgs e)
-        {
-
-        }
-
 
         async void EdellinenButtonClicked(object sender, EventArgs e) 
         {

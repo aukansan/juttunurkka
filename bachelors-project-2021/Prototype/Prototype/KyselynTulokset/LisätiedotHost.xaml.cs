@@ -1,6 +1,7 @@
 ﻿/*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Joni Lapinkoski
 
 This file is part of "Juttunurkka".
 
@@ -17,95 +18,85 @@ You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+
 namespace Prototype
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LisätiedotHost : ContentPage
     {
-        public IList<CollectionItem> Emojit { get; private set; } = null;
-        public IList<string> resultImages { get; set; }
-        public string introMessage { get; set; }
-        public IList<double> resultScale { get; set; }
-        public IList<int> resultAmount { get; set; }
-        public class CollectionItem
-        {
-            public Emoji Item { get; set; } = null;
-        }
+        public ObservableCollection<HostResultItem> Results { get; } = new();
+
         public LisätiedotHost()
         {
             InitializeComponent();
-            resultImages = new List<string>();
-            resultScale = new List<double>();
-            resultAmount = new List<int>();
-            Survey s = SurveyManager.GetInstance().GetSurvey();
-            introMessage += s.introMessage;
-            Emojit = new List<CollectionItem>();
-            List<Emoji> temp = s.emojis;
-            foreach (var item in temp)
-            {
-                CollectionItem i = new CollectionItem();
-                i.Item = item;
-                Emojit.Add(i);
-            }
-
-    
-            int count = 0;
-            double calculateScale = 0.0;
-            Dictionary<int, int> sorted = new Dictionary<int, int>();
-            foreach (KeyValuePair<int, int> item in Main.GetInstance().host.data.GetEmojiResults().OrderByDescending(key => key.Value))
-            {
-                sorted.Add(item.Key, item.Value);
-                resultAmount.Add(item.Value);
-                count += item.Value;
-            }
-            foreach (int key in sorted.Keys)
-            {
-                resultImages.Add("emoji" + key.ToString() + "lowres.png");
-            }
-            foreach (int value in sorted.Values)
-            {
-                if (count == 0)
-                {
-                    resultScale.Add(0);
-                }
-                else
-                {
-                    calculateScale = 1 * (double)value / count;
-                    resultScale.Add(calculateScale);
-                }
-            }
+            NavigationPage.SetHasNavigationBar(this, false);
             BindingContext = this;
+            LoadHostEmojiResults();
         }
+
+        void LoadHostEmojiResults()
+        {
+            var raw = Main
+                .GetInstance()
+                .host
+                .data
+                .GetEmojiResults()
+                .OrderByDescending(kv => kv.Value)
+                .ToList();
+
+            double maxCount = raw.Any() ? raw.Max(kv => kv.Value) : 1;
+            const double maxBarHeight = 200;
+            const double minBarHeight = 30;
+
+            var barColors = new[] { Colors.Blue, Colors.Red, Colors.Green };
+            var survey = SurveyManager.GetInstance().GetSurvey();
+
+            for (int i = 0; i < raw.Count; i++)
+            {
+                var kv = raw[i];
+
+                double rawH = (kv.Value / maxCount) * maxBarHeight;
+                double heightPx = Math.Max(rawH, minBarHeight);
+
+                Results.Add(new HostResultItem
+                {
+                    Image = $"emoji{kv.Key}lowres.png",
+                    Title = survey.emojis[i].Name,
+                    Amount = kv.Value.ToString(),   // "0" if zero
+                    ScalePx = heightPx,
+                    Color = barColors.Length > i
+                                ? barColors[i]
+                                : Colors.Gray
+                });
+            }
+        }
+
         async void KeskeytäClicked(object sender, EventArgs e)
         {
-            //Sulkee kyselyn kaikilta osallisujilta (linjat poikki höhö XD)
-            var res = await DisplayAlert("Haluatko varmasti sulkea huoneen?", "", "Kyllä", "Ei");
+            bool ok = await DisplayAlert("Haluatko varmasti sulkea huoneen?", "", "Kyllä", "Ei");
+            if (!ok) return;
 
-            if (res == true)
-            {
-                if (Main.GetInstance().state == Main.MainState.Participating)
-                {
-                    Main.GetInstance().client.DestroyClient();
-                }
-                else
-                {
-                    Main.GetInstance().host.DestroyHost();
-                }
-                await Navigation.PopToRootAsync();
-            }
-            else return;
+            if (Main.GetInstance().state == Main.MainState.Participating)
+                Main.GetInstance().client.DestroyClient();
+            else
+                Main.GetInstance().host.DestroyHost();
+
+            await Navigation.PopToRootAsync();
         }
+
         async void JatkaClicked(object sender, EventArgs e)
-        {
-            //Siirrytään odottamaan äänestyksen tuloksia (HOST)
-            await Navigation.PushAsync(new TulostenOdotus());
-            
-        }
+            => await Navigation.PushAsync(new TulostenOdotus());
+    }
+
+    public class HostResultItem
+    {
+        public string Image { get; set; }
+        public string Title { get; set; }
+        public string Amount { get; set; }
+        public double ScalePx { get; set; }
+        public Color Color { get; set; }
     }
 }

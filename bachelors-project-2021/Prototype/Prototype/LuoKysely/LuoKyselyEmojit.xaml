@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Eemil Alamäki, Riina Kaipia
 
 This file is part of "Juttunurkka".
 
@@ -17,96 +18,98 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.LuoKyselyEmojit"
+             BackgroundColor="#ffea7f"
              Title="Juttunurkka">
-    
 
-    <StackLayout Margin="20">
 
-        <Label Grid.Column="2"
+    <StackLayout VerticalOptions="FillAndExpand" Spacing="50" Padding="0,100,0,0">
+
+        <Label
             Text="Valitse hymiöt"
             VerticalOptions="StartAndExpand" 
             HorizontalOptions="CenterAndExpand"
             HorizontalTextAlignment="Center"
             FontAttributes="Bold"
-            FontSize="30"
-            TextColor="#4383EF" 
-            Margin="0,50,0,10"
+            FontSize="35"
+            TextColor="Black" 
+            Margin="0,0,0,0"
         />
-
 
         <CollectionView ItemsSource="{Binding Emojit}"
                         ItemsLayout="VerticalGrid, 2"
                         Margin="15,25,0,0">
 
-            <CollectionView.ItemTemplate >
-              <DataTemplate >
-                <Grid Padding="10"
-                      RowDefinitions="Auto, *"
-                      ColumnDefinitions="Auto, *">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="15"
+                           BorderColor="#4383EF"
+                           CornerRadius="5"
+                           Margin="10,10,10,10">   
+                        <Grid RowDefinitions="Auto"
+                              ColumnDefinitions="Auto, *">
 
-                    
-                        
+                            <!-- Image -->
+                            <Image Grid.RowSpan="2"
+                                   Source="{Binding Item.ImageSource}"     
+                                   Aspect="AspectFill"
+                                   Scale="1.5"
+                                   HeightRequest="60"
+                                   WidthRequest="60" /> 
 
-                        <!-- Kuva näkyy JOS kuvan lähteen (linkin) laittaa Jokin ongelma drawable kansion kanssa (ei näytä sinne ladattua kuvaa)-->
-                        <Image Grid.RowSpan="2"
-                               Source="{Binding Item.ImageSource}"     
-                               Aspect="AspectFill"
-                               Scale="1"
-                               HeightRequest="60"
-                               WidthRequest="60" />
-                       
+                            <!-- Checkbox -->
+                            <CheckBox x:Name="Checkbox"
+                                      IsChecked="{Binding CheckBox}"
+                                      CheckedChanged="OnCheckBoxCheckedChanged"
+                                      Color="Black"
+                                      Scale="1.5"
+                                      Grid.Row="1"
+                                      Grid.Column="1" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
 
-                        <CheckBox x:Name="Checkbox"
-                                  IsChecked = "{Binding CheckBox}"
-                                  CheckedChanged="OnCheckBoxCheckedChanged"
-                                  Color="Black"
-                                  Grid.Row="1"
-                                  Grid.Column="1"
-                                />
-                   
-                    
-                    </Grid>
-              </DataTemplate>
-           </CollectionView.ItemTemplate>
-             
-            
+
         </CollectionView>
 
         <Grid 
             RowDefinitions="Auto, Auto"
             ColumnDefinitions="Auto, Auto"
             VerticalOptions="End"
+            Padding="10"
             HorizontalOptions="CenterAndExpand">
 
-            <Button Grid.Column="1"
+            <Button Grid.Column="0"
                 Text="Edellinen"
                 Clicked="EdellinenButtonClicked"
                 VerticalOptions="EndAndExpand"
                 HorizontalOptions="CenterAndExpand" 
-                BackgroundColor="#4383EF"
-                TextColor="White"
+                BackgroundColor="#feba4f"
+                TextColor="Black"
                 BorderColor="Transparent"
-                Font="19"
+                FontSize="19"
                 Margin="20,0,10,40"
                 CornerRadius="10"
                 HeightRequest="50"
                 WidthRequest="150"
+                FontAttributes="Bold"
             />
 
-            <Button Grid.Column="2" 
+            <Button Grid.Column="1" 
                 Text="Jatka"
                 x:Name="JatkaBtn"
                 Clicked="JatkaButtonClicked" 
                 IsEnabled="false"
                 VerticalOptions="EndAndExpand" 
                 HorizontalOptions="CenterAndExpand" 
-                BackgroundColor="#4383EF"
-                TextColor="White"
+                BackgroundColor="#feba4e"
+                TextColor="Black"
+                FontAttributes="Bold"
                 BorderColor="Transparent"
-                Font="19"
+                FontSize="19"
                 Margin="20,0,10,40"
                 CornerRadius="10"
                 HeightRequest="50"

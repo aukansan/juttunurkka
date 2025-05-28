@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Emmi Poutanen, Riina Kaipia
 
 This file is part of "Juttunurkka".
 
@@ -17,45 +18,65 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.EmojinValinta"
-             Title="Juttunurkka"
-             >
+             BackgroundColor="#FFEA7F"
+             NavigationPage.HasNavigationBar="False">
 
-    <StackLayout >
+    <StackLayout Padding="50" Spacing="50">
 
-        <Label 
-            Text="{Binding introMessage}"
-            VerticalOptions="CenterAndExpand" 
-            HorizontalOptions="CenterAndExpand"
-            HorizontalTextAlignment="Center"
-            FontAttributes="Bold"
-            FontSize="30"
-            TextColor="#4383EF" 
-            
-        />
+        <HorizontalStackLayout 
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            Spacing="10">
+
+            <!-- Question -->
+            <Label 
+                Text="{Binding introMessage}"
+                VerticalOptions="Center" 
+                HorizontalTextAlignment="Center"
+                FontSize="35"
+                TextColor="Black"
+                FontFamily="BebasNeue"
+            />
+
+            <!-- Sound Button and its frame -->
+            <Frame
+                CornerRadius="5"
+                HasShadow="True"
+                Padding="0"
+                BackgroundColor="#FEBA4F"
+                HeightRequest="40"
+                WidthRequest="60">
+
+                <ImageButton
+                    x:Name="QuestionToSpeech"
+                    Clicked="QuestionToSpeech_Clicked"    
+                    Source="megaphone.png"
+                    ClassId="{Binding Item.ID}"
+                    BackgroundColor="Transparent"
+                    HeightRequest="35"
+                    WidthRequest="35"
+                    VerticalOptions="Center"
+                />
+            </Frame>
+        </HorizontalStackLayout>
+
+        <!-- Emoji selection frame -->
+        <Frame  Padding="15"
+                HorizontalOptions="Center"
+                BorderColor="White"
+                CornerRadius="15"
+                WidthRequest="300">
 
 
-        <Frame Padding="10"
-            VerticalOptions="CenterAndExpand" 
-            HorizontalOptions="CenterAndExpand"
-            BorderColor="#4383EF"
-            CornerRadius="10"
-            HeightRequest="220"
-            WidthRequest="310"
-               >
-
-
-
-            <CollectionView  ItemsSource="{Binding Emojit}"
+            <CollectionView ItemsSource="{Binding Emojit}"
                             ItemsLayout="VerticalGrid, 3">
-              
-
-                    <CollectionView.ItemTemplate>
+                <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Grid Padding="5"
-                              RowDefinitions="Auto, *"
+                             RowDefinitions="Auto, *"
                              ColumnDefinitions="Auto, *">
 
                             <ImageButton Grid.Column="0"
@@ -66,40 +87,39 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
                                        WidthRequest="60"
                                        Margin="10,0,0,0"
                                        Clicked="Button_Clicked"/>
-                                
-
-                        </Grid>
+                            </Grid>
                         </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                 </CollectionView.ItemTemplate>
+             </CollectionView>
           
-
-
         </Frame>
 
-
+        <!-- Progress Bar -->
         <ProgressBar x:Name="progressBar"
-            FlowDirection="RightToLeft"
-            Progress="1"
-            VerticalOptions="CenterAndExpand" 
-            HorizontalOptions="CenterAndExpand"
-            WidthRequest="300"
-            ScaleY="14"
-            ProgressColor="#4383EF"/>
+                    FlowDirection="LeftToRight"
+                    Progress="1"
+                    VerticalOptions="CenterAndExpand" 
+                    HorizontalOptions="CenterAndExpand"
+                    WidthRequest="300"
+                    ScaleY="15"
+                    ProgressColor="#FEBA4F"/>
 
-
-        <Button Text="Tallenna"
+        <!-- Submit Button -->
+        <Button Text="TALLENNA"
             x:Name="Vastaus"    
             Clicked="Vastaa_Clicked"    
             VerticalOptions="CenterAndExpand" 
             HorizontalOptions="CenterAndExpand" 
             IsEnabled="False"    
-            FontSize="19"
-            CornerRadius="10"
-            HeightRequest="50"
-            WidthRequest="255"
-            />
-
+            FontSize="30"
+            TextColor="Black"
+            FontFamily="RobotoMedium"
+            FontAttributes="Bold"
+            BorderColor="Transparent"
+            CornerRadius="15"
+            HeightRequest="95"
+            WidthRequest="270"
+            BackgroundColor="#FEBA4F"/>
 
     </StackLayout>
 

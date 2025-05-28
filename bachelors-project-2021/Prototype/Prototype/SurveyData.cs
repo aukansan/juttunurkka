@@ -20,6 +20,7 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Prototype
@@ -27,7 +28,7 @@ namespace Prototype
 	public class SurveyData
 	{
 		public Dictionary<int, int> emojiResults { get; private set; }
-		public Dictionary<(int, string), int> vote1Results { get; private set; }
+		public Dictionary<Activity, int> vote1Results { get; private set; }
 		public Dictionary<string, int> vote2Results { get; private set; }
 
 		public string voteResult { get; set; }
@@ -35,8 +36,7 @@ namespace Prototype
 
 		public SurveyData() {
 			emojiResults = new Dictionary<int, int>(SurveyManager.GetInstance().GetSurvey().emojis.Count);
-			vote1Results = new Dictionary<(int, string), int>();
-			vote2Results = new Dictionary<string, int>();
+			vote1Results = new Dictionary<Activity, int>();
 
 			foreach(var item in SurveyManager.GetInstance().GetSurvey().emojis)
             {
@@ -94,28 +94,21 @@ namespace Prototype
 				return;
 			}
 		}
-		public void AddVote1Results(Dictionary<int, string> activities)
-        {
-			//for each voted activity from user, check if that activity has been voted already add 1 to value, if not add it to the list with a value of 1
-			foreach (var activity in activities)
-			{
-				int count;
 
-				//check if activity already has a value
-				if (vote1Results.TryGetValue((activity.Key, activity.Value), out count))
-				{
-					Console.WriteLine("In Loop:: EmojiID: {0}, Activity: {1}", activity.Key, activity.Value);
-					count++;
-					vote1Results[(activity.Key, activity.Value)] = count;
-				}
-				Console.WriteLine("EmojiID: {0}, Activity: {1}", activity.Key, activity.Value);
-				
-				//check if vote exists at all
-				if (vote1Results.ContainsKey((activity.Key, activity.Value)) == false)
-                {
-					vote1Results.Add((activity.Key, activity.Value), 1);
-				}
-			}
+		public void AddVote1Results(Activity activity)
+        {
+            if (vote1Results.ContainsKey(activity))
+            {
+                // Increment the vote count for the existing activity
+                vote1Results[activity]++;
+                Console.WriteLine($"Activity '{activity.Title}' already exists. Incremented vote count to {vote1Results[activity]}.");
+            }
+            else
+            {
+                // Add the new activity to the dictionary with an initial vote count of 1
+                vote1Results.Add(activity, 0);
+                Console.WriteLine($"Activity '{activity.Title}' added to vote1Results with an initial vote count of 1.");
+            }
         }
 
 		public void AddVote2Results(string activity)
@@ -144,7 +137,7 @@ namespace Prototype
 		}
 
 		//get Vote1Results
-		public Dictionary<(int, string), int> GetVote1Results()
+		public Dictionary<Activity, int> GetVote1Results()
         {
 			return vote1Results;
         }
@@ -177,19 +170,6 @@ namespace Prototype
 			}
 			s = s.Substring(0, s.Length - 1);
 			s += "}";
-			
-			s += "{vote2Results: ";
-			foreach (var item in vote2Results)
-			{
-				s += "[";
-				s += item.Key;
-				s += ": ";
-				s += item.Value;
-				s += "],";
-			}
-			s = s.Substring(0, s.Length - 1);
-			s += "}";
-
 			return s;
 		}
 	}

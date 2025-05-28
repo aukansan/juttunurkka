@@ -2,6 +2,7 @@
 /*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Eemil Alamäki
 
 This file is part of "Juttunurkka".
 
@@ -85,11 +86,19 @@ namespace Prototype
 
             foreach (string name in surveyTemplates)
             {
-                string filename = name.Substring(name.LastIndexOf('/') + 1);
-                filename = filename.Substring(0, filename.LastIndexOf("."));
-                surveyNames.Add(filename);
-                Console.WriteLine(filename);
+                string filename = Path.GetFileNameWithoutExtension(name);
+
+                if (!string.IsNullOrEmpty(filename))
+                {
+                    surveyNames.Add(filename);
+                    Console.WriteLine(filename);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid or empty file name: " + name);
+                }
             }
+
             return surveyNames;
         }
 

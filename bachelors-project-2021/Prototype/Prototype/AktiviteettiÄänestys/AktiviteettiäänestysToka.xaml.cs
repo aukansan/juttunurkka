@@ -24,9 +24,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -52,6 +53,7 @@ namespace Prototype
         }
         private async void Vote2() {
             _countSeconds = Main.GetInstance().client.vote2Time;
+            // TODO Xamarin.Forms.Device.StartTimer is no longer supported. Use Microsoft.Maui.Dispatching.DispatcherExtensions.StartTimer instead. For more details see https://learn.microsoft.com/en-us/dotnet/maui/migration/forms-projects#device-changes
             Device.StartTimer(TimeSpan.FromSeconds(1), () =>
             {
                 _countSeconds--;
@@ -73,10 +75,6 @@ namespace Prototype
 
             await Task.Delay(Main.GetInstance().client.vote2Time * 1000);
 
-            if (Selected != null)
-            {
-                await Main.GetInstance().client.SendVote2Result(Selected);
-            }
 
             bool success = await Main.GetInstance().client.ReceiveVoteResult();
             if (success)

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+Copyright 2025 Riina Kaipia
+
+This file is part of "Juttunurkka".
+
+Juttunurkka is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+Juttunurkka is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Prototype.EmojiAnswered"
+             BackgroundColor="#FFEA7F"
+             NavigationPage.HasNavigationBar="False">
+
+    <ContentPage.Content>
+        <StackLayout Padding="20">
+
+            <Label Text="VASTAUS TALLENNETTU"
+                   FontAttributes="Bold"
+                   FontFamily="BebasNeue"
+                   TextColor="Black"
+                   FontSize="35"
+                   HorizontalOptions="Center"
+                   Margin="0,40,0,60" />
+
+            <Image Source="{Binding EmojiImageSource}"
+                   HeightRequest="150"
+                   WidthRequest="150"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit" />
+
+            <ProgressBar x:Name="progressBar"
+                         FlowDirection="LeftToRight"
+                         Progress="1"
+                         VerticalOptions="CenterAndExpand"
+                         HorizontalOptions="CenterAndExpand"
+                         WidthRequest="300"
+                         ScaleY="15"
+                         ProgressColor="#feba4e"
+                         Margin="0,50,0,0"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

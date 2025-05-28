@@ -18,6 +18,6 @@ You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]

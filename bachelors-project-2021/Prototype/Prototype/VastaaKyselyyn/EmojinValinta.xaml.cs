@@ -2,6 +2,7 @@
 /*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Emmi Poutanen, Riina Kaipia
 
 This file is part of "Juttunurkka".
 
@@ -22,8 +23,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -31,10 +34,10 @@ namespace Prototype
     public partial class EmojinValinta : ContentPage
     {
         CancellationTokenSource cts;
+        private readonly QuestionToSpeech _questionToSpeechClient = new();
         public string introMessage { get; set; }
-  
-
         private int answer;
+        private ImageButton _lastClickedEmoji;
 
         public IList<CollectionItem> Emojit { get; private set; } = null;
        
@@ -102,6 +105,7 @@ namespace Prototype
 
             try
             {
+                // Increase this number in order to keep the view visible for longer time
                 await UpdateProgressBar(0, 60000, token);
             }
             catch (OperationCanceledException e)
@@ -143,18 +147,15 @@ namespace Prototype
 
         }
 
-
         private void Button_Clicked(object sender, EventArgs e)
         {
 
             ImageButton emoji = sender as ImageButton;
 
-            // Tarkoitus saada päivitetty näkymää niin, että vain yksi kuva kerralaan on valittuna isoksi
-            /* if (sender is ImageButton b && b.Parent is Grid g && g.Children[0] is Frame f)
-             {
-                 // change the text of the button to the answer
-                 CollectionView view = (f.Children[0] as StackLayout).Children[0] as CollectionView;
-             }*/
+            if (_lastClickedEmoji != null && _lastClickedEmoji != emoji)
+            {
+                _lastClickedEmoji.Scale = 1.0; //palauta alkuperäiseen kokoon
+            }
 
             //Tallennetaan vastaus
             answer = int.Parse(emoji.ClassId.ToString());
@@ -162,17 +163,25 @@ namespace Prototype
             // Nyt kaikki, jotka valitaan, muutetaan isommaksi.
             emoji.Scale = 1.75;
 
+            // Tallennetaan nykyinen emoji viimeksi klikatuksi
+            _lastClickedEmoji = emoji;
+
             // Tarkistetaan, että vaan yhden valihtee
             Console.WriteLine("valittu " + answer);
             Vastaus.IsEnabled = true;
 
         }
 
+        private async void QuestionToSpeech_Clicked(object sender, EventArgs e)
+        {
+            await _questionToSpeechClient.Speak(introMessage);
+        }
+
         private async void Vastaa_Clicked(object sender, EventArgs e)
         {
             cts.Cancel(); //cancel task if button clicked
             await Main.GetInstance().client.SendResult(answer.ToString());
-            await Navigation.PushAsync(new OdotetaanVastauksiaClient());
+            await Navigation.PushAsync(new EmojiAnswered(answer));
         }
     }
 }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
+          2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Emmi Poutanen
+
+This file is part of "Juttunurkka".
+
+Juttunurkka is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+Juttunurkka is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Prototype.ActivityAnswered"
+             BackgroundColor="#FFEA7F">
+    <ContentPage.Content>
+        <StackLayout Padding="20">
+
+            <Label  Text="VASTAUS TALLENNETTU"
+                FontAttributes="Bold"
+                FontFamily="BebasNeue"
+                TextColor="Black"
+                FontSize="35"
+                HorizontalOptions="Center"
+                Margin="0,40,0,100"/>
+
+            <!-- This is now set as button even tho it does not do anything, it is just easiest
+                 to visualize -->
+            <Button
+                x:Name="Activity"
+                Text="{Binding ActivityToShow.Title}"
+                TextColor="Black"
+                FontAttributes="Bold"
+                FontSize="15"
+                FontFamily="RobotoMedium"
+                BackgroundColor="#feba4e"
+                BorderColor="Transparent"
+                CornerRadius="10"
+                HeightRequest="250"
+                WidthRequest="150"
+                VerticalOptions="Center"
+                ImageSource="{Binding ActivityToShow.ImageSource}"
+                ContentLayout="Top, 20"
+                LineBreakMode="WordWrap"/>
+
+            <!-- Progress Bar -->
+            <ProgressBar x:Name="progressBar"
+                FlowDirection="LeftToRight"
+                Progress="1"
+                VerticalOptions="CenterAndExpand" 
+                HorizontalOptions="CenterAndExpand"
+                WidthRequest="300"
+                ScaleY="15"
+                ProgressColor="#feba4e"
+                Margin="0,50,0,0"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,7 +1,7 @@
-﻿
 /*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Petri Pentinpuro
 
 This file is part of "Juttunurkka".
 
@@ -23,8 +23,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
-using Xamarin.Essentials;
-using Xamarin.Forms;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
+using Microsoft.Maui.ApplicationModel;
 
 namespace Prototype
 {
@@ -154,7 +156,7 @@ namespace Prototype
             InfoPopUp.IsVisible = false;
         }
 
-       
+
 
         async void AvaaOpettaja(object sender, EventArgs e)
         {
@@ -170,42 +172,10 @@ namespace Prototype
             await Navigation.PushAsync(new TallennetutKyselyt());
         }
 
-        void LiityKyselyynClicked(object sender, EventArgs e)
+        async void LiityKyselyynClicked(object sender, EventArgs e)
         {
-            // Kysytään kyselyn avainkoodi, placeholder(Ei ole mitenkään yhdistetty backendin kanssa)
-            popupSelection.IsVisible = true;
-
-        }
-
-
-        void Peruuta_Clicked(object sender, EventArgs e)
-        {
-            popupSelection.IsVisible = false;
-            entry.Text = null;
-        }
-
-        async void Ok_Clicked(object sender, EventArgs e)
-        {
-            OkButton.IsEnabled = false;
-            //Jos entry teksti on null, annetaan virheilmoitus
-            if(entry != null && !string.IsNullOrEmpty(entry.Text) && await Main.GetInstance().JoinSurvey(entry.Text))
-            {
-                // siirrytään "Liity Kyselyyn" sivulle jos annettu koodi on ok ja enabloidaan Ok button seuraavalle
-
-                await Navigation.PushAsync(new EmojinValinta());
-                OkButton.IsEnabled = true;
-                popupSelection.IsVisible = false;
-                
-            }
-            else await DisplayAlert("Virheellinen avainkoodi", "Syöttämälläsi avainkoodilla ei löydy avointa kyselyä", "OK");
-
-            //clear entry text
-            entry.Text = null;
-            OkButton.IsEnabled = true;
-
+            // Siirrytään SyotaAvainkoodi-sivulle
+            await Navigation.PushAsync(new SyotaAvainkoodi());
         }
     }
 }
-    
-    
-

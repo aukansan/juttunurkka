@@ -1,119 +1,53 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RootNamespace>Prototype</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<Nullable>enable</Nullable>
+		<OutputType Condition="'$(TargetFramework)' != 'net8.0'">Exe</OutputType>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
+	<ItemGroup>
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
-  </ItemGroup>
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
 
-  <ItemGroup>
-    <Compile Update="KyselynTulokset\YhteenvetoClient.xaml.cs">
-      <DependentUpon>YhteenvetoClient.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="KyselynTulokset\LisätiedotClient.xaml.cs">
-      <DependentUpon>LisätiedotClient.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="LuoKysely\Omakysymys.xaml.cs">
-      <DependentUpon>Omakysymys.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="LuoKysely\Opettajanhuone.xaml.cs">
-      <DependentUpon>Opettajanhuone.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="VastaaKyselyyn\EmojinValinta.xaml.cs">
-      <DependentUpon>EmojinValinta.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="KyselynTulokset\TabbedViewClient.xaml.cs">
-      <DependentUpon>TabbedViewClient.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="VastaaKyselyyn\OdotetaanOsallistujiaOpettaja.xaml.cs">
-      <DependentUpon>OdotetaanOsallistujiaOpettaja.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-	
-	
-  <ItemGroup>
-    <EmbeddedResource Update="AktiviteettiÄänestys\AktiviteettiäänestysTulokset.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="AktiviteettiÄänestys\AktiviteettiäänestysEka.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="AktiviteettiÄänestys\AktiviteettiäänestysToka.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="AktiviteettiÄänestys\JuttunurkkaSuljettu.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="KyselynTulokset\LisätiedotHost.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="KyselynTulokset\TabbedViewHost.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="KyselynTulokset\YhteenVetoHost.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LuoKysely\Esikatselu.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LuoKysely\Omakysymys.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LuoKysely\Opettajanhuone.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="TallennetutKyselyt\KyselynTarkastelu.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LuoKysely\LuoKyselyEmojit.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LuoKysely\LuoKyselyJohdatus.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LuoKysely\LuoKyselyLopetus.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="LuoKysely\LuoKyselyToimenpiteet.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="TallennetutKyselyt\TallennetutKyselyt.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="KyselynTulokset\LisätiedotClient.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="AktiviteettiÄänestys\TulostenOdotus.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="VastaaKyselyyn\EmojinValinta.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="KyselynTulokset\YhteenvetoClient.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="KyselynTulokset\TabbedViewClient.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="VastaaKyselyyn\OdotetaanOsallistujiaOpettaja.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="VastaaKyselyyn\OdotetaanVastauksiaClient.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="VastaaKyselyyn\OdotetaanVastauksiaOpe.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>  
-  </ItemGroup>
-	
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="LuoKysely\LuoOmaVaihtoehto.xaml.cs">
+	    <DependentUpon>LuoOmaVaihtoehto.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="VastaaKyselyyn\EmojiAnswered.xaml.cs">
+	    <DependentUpon>moi.xaml.cs</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="AvainkoodiOikein.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="LuoKysely\LuoOmaVaihtoehto.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="VastaaKyselyyn\EmojiAnswered.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>

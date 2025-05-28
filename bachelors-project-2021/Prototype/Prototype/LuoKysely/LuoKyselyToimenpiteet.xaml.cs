@@ -21,8 +21,10 @@ along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -35,16 +37,16 @@ namespace Prototype
 
         {
             public Emoji Emoji { get; set; }
-            public IList<string> ActivityChoises { get; set; }
+            public IList<Activity> ActivityChoises { get; set; }
 
-            public ObservableCollection<object> Selected { get; set; }
-            public CollectionItem(Emoji emoji, IList<string> activities)
+            public ObservableCollection<Activity> Selected { get; set; }
+            public CollectionItem(Emoji emoji, IList<Activity> activities)
             {
                 Emoji = emoji;
                 ActivityChoises = activities;
                
-                Selected = new ObservableCollection<object>();
-                foreach (var item in emoji.activities)
+                Selected = new ObservableCollection<Activity>();
+                foreach (var item in emoji.Activities)
                 {
                     Selected.Add(ActivityChoises[ActivityChoises.IndexOf(item)]);
                 }
@@ -122,14 +124,14 @@ namespace Prototype
             List<Emoji> tempEmojis = new List<Emoji>();
             foreach (var item in Items)
             {
-                List<string> tempActivities = new List<string>();
+                List<Activity> tempActivities = [];
                 foreach (var selection in item.Selected)
                 {
                     Console.WriteLine("Lisätään aktiviteetti:" +selection as string);
                     Console.WriteLine(item.Emoji.Name +"emojin yhteyteen");
-                    tempActivities.Add(selection as string);
+                    tempActivities.Add(selection);
                 }
-                item.Emoji.activities = tempActivities;
+                item.Emoji.Activities = tempActivities;
                 tempEmojis.Add(item.Emoji);
             }
             SurveyManager.GetInstance().GetSurvey().emojis = tempEmojis;

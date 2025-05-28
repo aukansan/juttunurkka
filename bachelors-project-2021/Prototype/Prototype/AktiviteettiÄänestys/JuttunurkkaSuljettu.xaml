@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2025 Joni Lapinkoski
 
 This file is part of "Juttunurkka".
 
@@ -17,84 +18,97 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 -->
-    
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Prototype.JuttunurkkaSuljettu"
-             NavigationPage.HasNavigationBar="False">
-    <AbsoluteLayout
-        Padding="0"
-        HorizontalOptions="FillAndExpand"
-        VerticalOptions="FillAndExpand">
-
-
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="#ffea7f">
+    <AbsoluteLayout Padding="0"
+                  HorizontalOptions="FillAndExpand"
+                  VerticalOptions="FillAndExpand">
         <StackLayout AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
-                     AbsoluteLayout.LayoutFlags="All" 
-                     >
+                 AbsoluteLayout.LayoutFlags="All"
+                 BackgroundColor="#ffea7f">
+            <StackLayout Padding="10">
+                <Image Source="logo_no_background"
+               HorizontalOptions="Center"
+               VerticalOptions="CenterAndExpand"
+               WidthRequest="50"
+               HeightRequest="50"
+               Margin="0,150,0,60"
+               Aspect="AspectFit"
+               Scale="6.5" />
 
-            <StackLayout Padding="0,60,0,0">
+                <Grid HorizontalOptions="CenterAndExpand"
+              Margin="0,110,0,0"
+              HeightRequest="360"
+              WidthRequest="300"
+              BackgroundColor="#89e077">
+                    <Frame BackgroundColor="#feba4f"
+                 CornerRadius="7"
+                 HasShadow="False"
+                 HorizontalOptions="FillAndExpand"
+                 VerticalOptions="FillAndExpand"
+                 Margin="-20,35,-20,170">
+                        <Grid HorizontalOptions="Center"
+                  VerticalOptions="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
+                            <Label Grid.Row="0"
+                     Grid.Column="1"
+                     Text="JUTTUNURKKA ON"
+                     FontSize="29"
+                     FontAttributes="Bold"
+                     TextColor="Black"
+                     HorizontalTextAlignment="Center"
+                     VerticalTextAlignment="Center"
+                     Margin="0,-10,0,5" />
 
+                            <Label Grid.Row="1"
+                     Grid.Column="1"
+                     Text="SULJETTU"
+                     FontSize="29"
+                     FontAttributes="Bold"
+                     TextColor="Black"
+                     HorizontalTextAlignment="Center"
+                     VerticalTextAlignment="Center"
+                     Margin="-110,5,0,0" />
 
-                <Label Text="Juttunurkka"
-                   Margin="5,10,0,20"
-                   HorizontalOptions="Center"
-                   TextColor="#4383EF"
-                   Font="Bold"
-                   FontSize="50"
-                 />
-
-                <StackLayout Orientation="Horizontal"  
-                    HorizontalOptions="CenterAndExpand"
-                    HeightRequest="500"
-                    WidthRequest="280"         
-                    BackgroundColor="#CBD6E5"
-                    Margin="0,20,0,0">
-
-                    <Frame
-                        BackgroundColor="White"
-                        BorderColor="#4383EF"
-                        CornerRadius="10"
-                        HeightRequest="150" 
-                        WidthRequest="300"
-                        HorizontalOptions="Center" 
-                        VerticalOptions="Center"
-                        >
-
-                        <Grid>
-                            <Label Text="Juttunurkka on nyt suljettu" 
-                            Grid.Row="0"       
-                            FontSize="24" 
-                            TextColor="#4383EF" 
-                            Margin="10,10,10,0" 
-                            HorizontalOptions="Center"
-                            HorizontalTextAlignment="Center"/>
-
-                            <Image Source="lukko.png"
-                            Grid.Row="1"
-                            WidthRequest="70"
-                            />
+                            <Image Grid.Row="0"
+                     Grid.RowSpan="2"
+                     Grid.Column="1"
+                     Source="lukko.png"
+                     Aspect="AspectFit"
+                     WidthRequest="60"
+                     HeightRequest="60"
+                     Margin="120,35,0,0" />
                         </Grid>
-
                     </Frame>
+                </Grid>
 
-                </StackLayout>
-
-                
                 <Button Text="Palaa alkuun"
-                    VerticalOptions="CenterAndExpand" 
-                    HorizontalOptions="CenterAndExpand" 
-                    Font="19"
-                    Margin="20,10,10,35"
-                    CornerRadius="10"
-                    HeightRequest="50"
-                    WidthRequest="255"
-                    Clicked="AlkuunClicked"
-                 />
-
+                TextColor="Black"
+                FontAttributes="Bold"
+                Clicked="AlkuunClicked"
+                HorizontalOptions="Center"
+                VerticalOptions="EndAndExpand"
+                FontSize="24"
+                BackgroundColor="#feba4f"
+                BorderColor="#ffea7f"
+                BorderWidth="0"
+                CornerRadius="7"
+                HeightRequest="70"
+                WidthRequest="250"
+                Margin="0,-55,0,10" />
             </StackLayout>
-
         </StackLayout>
-
     </AbsoluteLayout>
 </ContentPage>

@@ -1,0 +1,110 @@
+%% High level flowchart of the app. Run this with VSCode extension or Mermaid live editor.
+
+%%{
+    init: {
+        'theme': 'base',
+        'themeVariables': {
+            'primaryColor': '#fa5a64',
+            'primaryTextColor': '#000',
+            'primaryBorderColor': '#7C0000',
+            'lineColor': '#F8B229',
+            'secondaryColor': '#44bd64',
+            'tertiaryColor': '#fff',
+            'fontSize': '22px'
+        }
+    }
+}%%
+flowchart TD
+%% Common start point
+A[Start Screen] --> B{Choose Action}
+
+    %% Split into swimlanes
+    B -->|"Login (Host)"| C1
+    B -->|"Open Juttunurkka (Client)"| U
+
+    %% Host Swimlane
+    subgraph Host
+        direction TB
+        C1{Create new or Archive}
+        C1 -->|Create New| C[Create New Juttunurkka]
+        C1 -->|Archive| D[Select From Stored Surveys]
+        D -->|Edit| E
+        D -->|Start| K
+        E{Question Source}
+        F[Select Predefined Question]
+        G[Compose Own Question]
+        H[Select Emojis]
+        I[Pick 2 Activities per selected Emoji]
+        J[Set Session Name & Code]
+        K[Review & Start Session]
+        L[Emoji Voting Phase, Accept Clients And Serve Data]
+        M{Voting Ends}
+        N[Show Emoji Results]
+        O[Start Activity Vote]
+        P[Activity Voting Phase]
+        Q{Voting Ends}
+        R[Show Activity Results]
+        S[Close Survey, Destroy Host]
+        T[Return To Main]
+    end
+
+    %% Client Swimlane
+    subgraph Client
+        direction TB
+        U[Enter Session Code]
+        V[Join & Fetch Emoji Candidates]
+        W[Emoji Voting Screen]
+        X[Vote or Skip]
+        Y[Await Emoji Results]
+        Z[Show Emoji Results]
+        AA[Activity Voting Screen]
+        AB[Vote or Skip]
+        AC[Await Activity Results]
+        AD[Show Activity Results]
+        AE[Close Survey, Destroy client]
+        AF[Return To Main]
+    end
+
+    %% Host connections
+    C --> E
+    E -->|Predefined| F
+    E -->|Custom| G
+    F --> H
+    G --> H
+    H --> I
+    I --> J
+    J --> K
+    K --> L
+    L --> M
+    M --> N
+    N --> O
+    O --> P
+    P --> Q
+    Q --> R
+    R --> S
+    S --> T
+    T --> A
+
+    %% Client connections
+    K -.->|Enables| V
+    U --> V
+    V --> W
+    W --> X
+    X --> Y
+    M --> |Triggers| Z
+    Y --> Z
+    Z --> AA
+    AA --> AB
+    O --> |Triggers| AA
+    AB --> AC
+    Q --> |Triggers| AD
+    AC --> AD
+    AD --> AE
+    AE --> AF
+    AF --> A
+
+    %% Style for swimlanes
+    classDef hostStyle fill:#e6f7ff,stroke:#b7eb8f
+    classDef clientStyle fill:#f6ffed,stroke:#b7eb8f
+    class C1,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T hostStyle
+    class U,V,W,X,Y,Z,AA,AB,AC,AD,AE,AF clientStyle

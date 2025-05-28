@@ -23,9 +23,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Controls.Compatibility;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prototype
 {
@@ -36,6 +37,7 @@ namespace Prototype
         public LuoKyselyLopetus()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
             Survey s = SurveyManager.GetInstance().GetSurvey();
             introMessage += s.introMessage;
             BindingContext = this;

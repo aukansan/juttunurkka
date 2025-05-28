@@ -31,21 +31,20 @@ namespace Prototype
 		public string Impact { get; set; } = "default";
 
 		public bool IsChecked { get; set; } = false;
-		public IList<string> activities { get; set; } = null;
+		public IList<Activity> Activities { get; set; } = [];
 		public string ImageSource { get; set; } = "missing.png";
 
 		public Emoji()
 		{
-			activities = new List<string>() { "foo", "bar" };
 		}
 
-		public Emoji(int ID, string Name, string impact, bool isChecked, List<string> activities, string ImageSource)
+		public Emoji(int ID, string Name, string impact, bool isChecked, List<Activity> activities, string ImageSource)
 		{
 			this.ID = ID;
 			this.Name = Name;
 			this.Impact = impact;
 			this.IsChecked = IsChecked;
-			this.activities = activities;
+			this.Activities = activities;
 			this.ImageSource = ImageSource;
 		}
 		 
@@ -58,9 +57,9 @@ namespace Prototype
 		//	value += $"Impact: {Impact}, ";
 
 			value += "Activities: [";			
-			foreach (var item in activities)
+			foreach (var item in Activities)
 			{
-				value += $"{item} ";
+				value += $"{item.Title} ";
 			}
 			value += "], ";
 
