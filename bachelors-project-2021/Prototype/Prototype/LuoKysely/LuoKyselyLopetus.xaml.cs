@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/* In this class, the user gives the story corner a name and the story corner key code is generated. */
+/* In this class, the user gives the juttunurkka a name and the juttunurkka key code is generated. */
 
 using System;
 using System.Collections.Generic;
