@@ -2,6 +2,7 @@
 /*
 Copyright 2021 Emma Kemppainen, Jesse Huttunen, Tanja Kultala, Niklas Arjasmaa
           2022 Pauliina Pihlajaniemi, Viola Niemi, Niina Nikki, Juho Tyni, Aino Reinikainen, Essi Kinnunen
+          2026 Aurora Kansanoja
 
 This file is part of "Juttunurkka".
 
@@ -17,6 +18,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Juttunurkka.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+/* In this class, the user gives the story corner a name and the story corner key code is generated. */
 
 using System;
 using System.Collections.Generic;
@@ -43,7 +46,10 @@ namespace Prototype
             BindingContext = this;
 
             NameEditor.Text = SurveyManager.GetInstance().GetSurvey().Name;
-            KeyEditor.Text = SurveyManager.GetInstance().GetSurvey().RoomCode;
+
+            String generatedCode = GenerateKeyNumber();
+            KeyEditor.Text = generatedCode;
+            s.RoomCode = generatedCode;
         }
 
         async void EdellinenButtonClicked(object sender, EventArgs e)
@@ -83,6 +89,14 @@ namespace Prototype
                 //jos isValid on false, niin poistetaan kirjain heti, kun se kirjoitetaan
                 ((Entry)sender).Text = isValid ? args.NewTextValue : args.NewTextValue.Remove(args.NewTextValue.Length - 1);
             }
+        }
+
+        private string GenerateKeyNumber(int length = 4)
+        {
+            const string numbers = "1234567890";
+            Random random = new Random();
+            return new string(Enumerable.Repeat(numbers, length).Select(s => s[random.Next(s.Length)]).ToArray()); ;
+
         }
     }
 }
